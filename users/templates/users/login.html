@@ -1,12 +1,13 @@
 {% extends 'users/base.html' %}
 
-{% block title %}Вход{% endblock %}
+{% block title %}Вход - Atyrau Events{% endblock %}
+
 {% block content %}
-<h2>Вход</h2>
-<form method="post">
+<h2>Вход в аккаунт</h2>
+<form method="POST">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Войти</button>
+    <button type="submit" class="cta">Войти</button>
 </form>
-<a href="{% url 'register' %}">Нет аккаунта? Регистрация</a>
+<p>Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
 {% endblock %}

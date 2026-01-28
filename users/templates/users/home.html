@@ -1,61 +1,31 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Atyrau Events</title>
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
-</head>
-<body>
+{% extends 'users/base.html' %}
 
-<header class="header">
-    <div class="logo">Atyrau Events</div>
+{% block title %}Главная - Atyrau Events{% endblock %}
 
-    <nav class="nav">
-        <a href="#">Турниры</a>
-        <a href="#">О проекте</a>
+{% block content %}
+<section class="hero">
+    <h1>Турниры и события твоего города</h1>
+    <p>Участвуй, организовывай и следи за событиями в Атырау</p>
 
-        {% if user.is_authenticated %}
-            <a href="#">Профиль</a>
-            <a href="{% url 'logout' %}" class="logout">Выйти</a>
-        {% else %}
-            <a href="{% url 'login' %}" class="btn">Войти</a>
-            <a href="{% url 'register' %}" class="btn btn-outline">Регистрация</a>
-        {% endif %}
-    </nav>
-</header>
+    {% if user.is_authenticated %}
+        <a href="#" class="cta">Перейти к турнирам</a>
+    {% else %}
+        <a href="{% url 'register' %}" class="cta">Присоединиться</a>
+    {% endif %}
+</section>
 
-<main class="main">
-    <section class="hero">
-        <h1>Турниры и события твоего города</h1>
-        <p>Участвуй, организовывай и следи за событиями в Атырау</p>
-
-        {% if user.is_authenticated %}
-            <a href="#" class="cta">Перейти к турнирам</a>
-        {% else %}
-            <a href="{% url 'register' %}" class="cta">Присоединиться</a>
-        {% endif %}
-    </section>
-
-    <section class="features">
-        <div class="feature">
-            <h3>🏆 Турниры</h3>
-            <p>Спортивные и киберспортивные события</p>
-        </div>
-        <div class="feature">
-            <h3>👥 Команды</h3>
-            <p>Создавай команды и зови друзей</p>
-        </div>
-        <div class="feature">
-            <h3>📍 Город</h3>
-            <p>Все события Атырау в одном месте</p>
-        </div>
-    </section>
-</main>
-
-<footer class="footer">
-    <p>© 2026 Atyrau Events</p>
-</footer>
-
-</body>
-</html>
+<section class="features">
+    <div class="feature">
+        <h3>🏆 Турниры</h3>
+        <p>Спортивные и киберспортивные события</p>
+    </div>
+    <div class="feature">
+        <h3>👥 Команды</h3>
+        <p>Создавай команды и зови друзей</p>
+    </div>
+    <div class="feature">
+        <h3>📍 Город</h3>
+        <p>Все события Атырау в одном месте</p>
+    </div>
+</section>
+{% endblock %}
