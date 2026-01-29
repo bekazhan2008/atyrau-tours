@@ -18,9 +18,6 @@ db.sqlite3
 staticfiles/
 media/
 
-# Collected static
-/static/
-
 # Test / coverage
 .pytest_cache/
 .coverage
