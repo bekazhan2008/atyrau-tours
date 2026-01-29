@@ -1,12 +1,50 @@
-db.sqlite3
-.venv/
-
 # Python cache
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
+*.so
 
-# Django database
-*.sqlite3
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
 
-# IDE
+# Environment variables
+.env
+.env.*
+
+# Django stuff
+*.log
+db.sqlite3
+staticfiles/
+media/
+
+# Collected static
+/static/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+*.py,cover
+
+# Mypy / type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Node / frontend (if any)
+node_modules/
+
+# IDEs
+.vscode/
 .idea/
+
+# OS junk
+.DS_Store
+Thumbs.db

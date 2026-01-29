@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AtyrauEvents</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Список Турниров</h2>
+
+<ul>
+    {% for tournament in tournaments %}
+        <li>
+            <strong>{{ tournament.title }}</strong><br>
+            Игра: {{ tournament.game.name }}<br>
+            Место: {{ tournament.location.name }}<br>
+            Дата начала: {{ tournament.start_date }}<br>
+            Макс участников: {{ tournament.max_participants }}<br>
+        </li>
+        <hr>
+    {% empty %}
+        <p>Пока турниров нету</p>
+    {% endfor %}
+</ul>
+<button>Зарегестрироватся</button>
+
+{% endblock %}
+
+</body>
+</html>
