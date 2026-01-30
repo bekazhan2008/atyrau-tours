@@ -2,6 +2,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from .forms import LoginForm, RegisterForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from .models import Profile
 
 
 def home(request):
@@ -15,6 +17,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
+            Profile.objects.create(user=user)
             messages.success(request, f'Аккаунт {user.username} успешно создан!')
             return redirect('home')
     else:
@@ -44,3 +47,8 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return redirect('login')
+
+
+@login_required
+def profile(request):
+    return render(request, 'users/profile.html')
