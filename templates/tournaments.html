@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberHero - Турниры</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Right Sidebar Navigation */
+        .sidebar {
+            width: 100px;
+            background: rgba(15, 20, 40, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 0;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            height: 100vh;
+            right: 0;
+            top: 0;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(100%);
+        }
+
+        .logo {
+            padding: 0 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+
+        .nav-item {
+            padding: 1rem 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-right: 3px solid transparent;
+            margin: 0.2rem 0;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(0, 212, 255, 0.1);
+            border-right-color: #00d4ff;
+        }
+
+        .nav-item svg {
+            width: 28px;
+            height: 28px;
+            fill: #00d4ff;
+        }
+
+        .nav-item span {
+            font-size: 0.65rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .user-info {
+            padding: 1rem 0.5rem;
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .user-name {
+            font-size: 0.6rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            word-break: break-word;
+        }
+
+        /* Mobile Toggle */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1001;
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid #00d4ff;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-toggle:hover {
+            background: rgba(0, 212, 255, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-right: 100px;
+            padding: 2rem;
+            transition: margin-right 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+        }
+
+        /* Tournament Tabs */
+        .tournament-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: -2px;
+        }
+
+        .tab-btn:hover,
+        .tab-btn.active {
+            color: #00d4ff;
+            border-bottom-color: #00d4ff;
+        }
+
+        /* Discipline Panel */
+        .discipline-panel {
+            margin-bottom: 2rem;
+        }
+
+        .discipline-title {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .discipline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        .discipline-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .discipline-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .discipline-card:hover {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.05);
+            transform: translateY(-3px);
+        }
+
+        .discipline-card:hover::before {
+            opacity: 1;
+        }
+
+        .discipline-card.active {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .discipline-card.active::before {
+            opacity: 1;
+        }
+
+        .discipline-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .discipline-card:hover .discipline-icon,
+        .discipline-card.active .discipline-icon {
+            background: rgba(0, 212, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .discipline-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+        }
+
+        .discipline-card:hover .discipline-name,
+        .discipline-card.active .discipline-name {
+            color: #00d4ff;
+        }
+
+        .discipline-count {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            text-align: center;
+        }
+
+        .discipline-card.active .discipline-count {
+            color: rgba(0, 212, 255, 0.8);
+        }
+
+        /* Active Tournament Hero */
+        .active-tournament {
+            position: relative;
+            height: 400px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, rgba(0, 50, 100, 0.8) 0%, rgba(0, 20, 50, 0.9) 100%),
+                        linear-gradient(90deg, #001030 0%, #003060 100%);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            padding: 3rem;
+        }
+
+        .tournament-hero-content {
+            max-width: 600px;
+            z-index: 2;
+        }
+
+        .tournament-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            border-radius: 20px;
+            color: #ff0000;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .tournament-hero-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .tournament-prize {
+            font-size: 2rem;
+            color: #00d4ff;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+        }
+
+        .tournament-info {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .tournament-cta {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-primary {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            border: none;
+            border-radius: 12px;
+            color: #0a0e27;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-secondary {
+            padding: 1rem 2.5rem;
+            background: transparent;
+            border: 2px solid #00d4ff;
+            border-radius: 12px;
+            color: #00d4ff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        /* Tournament Grid */
+        .tournaments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .tournament-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tournament-card:hover {
+            transform: translateY(-5px);
+            border-color: #00d4ff;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .tournament-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(0, 100, 100, 0.3) 0%, rgba(0, 50, 50, 0.3) 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tournament-status {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .status-live {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+        }
+
+        .status-upcoming {
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+        }
+
+        .status-registration {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+
+        .tournament-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .tournament-game {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .tournament-body {
+            padding: 1.5rem;
+        }
+
+        .tournament-prize-pool {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #00d4ff;
+            margin-bottom: 1.5rem;
+        }
+
+        .tournament-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .detail-item svg {
+            width: 16px;
+            height: 16px;
+            fill: #00d4ff;
+        }
+
+        .tournament-progress {
+            margin-bottom: 1rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff 0%, #0099ff 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .tournament-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .participants {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .view-details {
+            color: #00d4ff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .view-all {
+            color: #00d4ff;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: gap 0.3s ease;
+        }
+
+        .view-all:hover {
+            gap: 0.75rem;
+        }
+
+        /* Past Tournaments Table */
+        .past-tournaments {
+            margin-top: 3rem;
+        }
+
+        .tournament-table {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            align-items: center;
+        }
+
+        .table-row:hover {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .tournament-name-col {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .winner-col {
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .mobile-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-right: 0;
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .active-tournament {
+                height: auto;
+                padding: 2rem;
+            }
+
+            .tournament-hero-title {
+                font-size: 1.75rem;
+            }
+
+            .tournament-prize {
+                font-size: 1.5rem;
+            }
+
+            .tournament-info {
+                gap: 1rem;
+            }
+
+            .tournament-cta {
+                flex-direction: column;
+            }
+
+            .tournaments-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .tournament-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding-bottom: 0.5rem;
+            }
+
+            .tab-btn {
+                white-space: nowrap;
+                padding: 1rem 1.5rem;
+            }
+
+            .discipline-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 0.75rem;
+            }
+
+            .discipline-card {
+                padding: 1rem;
+            }
+
+            .discipline-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.5rem;
+            }
+
+            .discipline-name {
+                font-size: 0.8rem;
+            }
+
+            .table-header,
+            .table-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .table-header {
+                display: none;
+            }
+
+            .table-row {
+                padding: 1rem;
+            }
+
+            .tournament-name-col::before {
+                content: "Турнир: ";
+                color: rgba(255, 255, 255, 0.5);
+                font-size: 0.8rem;
+            }
+
+            .winner-col::before {
+                content: "Победитель: ";
+                color: rgba(255, 255, 255, 0.5);
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Mobile Toggle -->
+        <div class="mobile-toggle" onclick="toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">ТУРНИРЫ</h1>
+                <p class="page-subtitle">Участвуйте в соревнованиях и выигрывайте призы</p>
+            </div>
+
+            <!-- Tournament Tabs -->
+            <div class="tournament-tabs">
+                <button class="tab-btn active">Все турниры</button>
+                <button class="tab-btn">Активные</button>
+                <button class="tab-btn">Регистрация</button>
+                <button class="tab-btn">Предстоящие</button>
+                <button class="tab-btn">Завершённые</button>
+            </div>
+
+            <!-- Discipline Panel -->
+            <div class="discipline-panel">
+                <div class="discipline-title">Выберите дисциплину</div>
+                <div class="discipline-grid">
+                    <div class="discipline-card active" data-discipline="all">
+                        <div class="discipline-icon">🎮</div>
+                        <div class="discipline-name">Все игры</div>
+                        <div class="discipline-count">24 турнира</div>
+                    </div>
+                    <div class="discipline-card" data-discipline="cs2">
+                        <div class="discipline-icon">🔫</div>
+                        <div class="discipline-name">CS2</div>
+                        <div class="discipline-count">8 турниров</div>
+                    </div>
+                    <div class="discipline-card" data-discipline="dota2">
+                        <div class="discipline-icon">⚔️</div>
+                        <div class="discipline-name">Dota 2</div>
+                        <div class="discipline-count">6 турниров</div>
+                    </div>
+                    <div class="discipline-card" data-discipline="valorant">
+                        <div class="discipline-icon">💥</div>
+                        <div class="discipline-name">Valorant</div>
+                        <div class="discipline-count">5 турниров</div>
+                    </div>
+                    <div class="discipline-card" data-discipline="lol">
+                        <div class="discipline-icon">🏆</div>
+                        <div class="discipline-name">League of Legends</div>
+                        <div class="discipline-count">3 турнира</div>
+                    </div>
+                    <div class="discipline-card" data-discipline="pubg">
+                        <div class="discipline-icon">🎯</div>
+                        <div class="discipline-name">PUBG</div>
+                        <div class="discipline-count">2 турнира</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Tournament Hero -->
+            <div class="active-tournament">
+                <div class="tournament-hero-content">
+                    <span class="tournament-badge">🔴 LIVE СЕЙЧАС</span>
+                    <h2 class="tournament-hero-title">CyberHero Championship 2026</h2>
+                    <div class="tournament-prize">$500,000</div>
+                    <div class="tournament-info">
+                        <div class="info-item">
+                            <span class="info-label">Статус</span>
+                            <span class="info-value">Полуфинал</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Участников</span>
+                            <span class="info-value">64 команды</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Формат</span>
+                            <span class="info-value">Single Elimination</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Зрителей</span>
+                            <span class="info-value">2.3M Online</span>
+                        </div>
+                    </div>
+                    <div class="tournament-cta">
+                        <button class="btn-primary">Смотреть трансляцию</button>
+                        <button class="btn-secondary">Расписание</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Tournaments -->
+            <div class="section-header">
+                <h2 class="section-title">Предстоящие турниры</h2>
+                <span class="view-all">Смотреть все →</span>
+            </div>
+
+            <div class="tournaments-grid">
+                <!-- Tournament Card 1 -->
+                <div class="tournament-card">
+                    <div class="tournament-header">
+                        <span class="tournament-status status-registration">Открыта регистрация</span>
+                        <h3 class="tournament-name">Spring Championship</h3>
+                        <p class="tournament-game">Dota 2 • EU West</p>
+                    </div>
+                    <div class="tournament-body">
+                        <div class="tournament-prize-pool">$250,000</div>
+                        <div class="tournament-details">
+                            <div class="detail-item">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                <span>Начало: 15 Февраля</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                                <span>128 команд</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                    <path d="M2 17l10 5 10-5"/>
+                                </svg>
+                                <span>Double Elim</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                <span>Online</span>
+                            </div>
+                        </div>
+                        <div class="tournament-progress">
+                            <div class="progress-label">
+                                <span>Зарегистрировано</span>
+                                <span>87/128</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 68%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tournament-footer">
+                        <div class="participants">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#00d4ff">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                            </svg>
+                            87 команд
+                        </div>
+                        <span class="view-details">Подробнее →</span>
+                    </div>
+                </div>
+
+                <!-- Tournament Card 2 -->
+                <div class="tournament-card">
+                    <div class="tournament-header" style="background: linear-gradient(135deg, rgba(100, 0, 50, 0.3) 0%, rgba(50, 0, 20, 0.3) 100%);">
+                        <span class="tournament-status status-upcoming">Скоро</span>
+                        <h3 class="tournament-name">Pro League Season 4</h3>
+                        <p class="tournament-game">CS:GO • Global</p>
+                    </div>
+                    <div class="tournament-body">
+                        <div class="tournament-prize-pool">$1,000,000</div>
+                        <div class="tournament-details">
+                            <div class="detail-item">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                <span>Начало: 1 Марта</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                </svg>
+                                <span>32 команды</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                    <path d="M2 17l10 5 10-5"/>
+                                </svg>
+                                <span>Swiss System</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                <span>LAN Final</span>
+                            </div>
+                        </div>
+                        <div class="tournament-progress">
+                            <div class="progress-label">
+                                <span>До начала</span>
+                                <span>29 дней</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 35%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tournament-footer">
+                        <div class="participants">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#00d4ff">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                            </svg>
+                            Только приглашения
+                        </div>
+                        <span class="view-details">Подробнее →</span>
+                    </div>
+                </div>
+
+                <!-- Tournament Card 3 -->
+                <div class="tournament-card">
+                    <div class="tournament-header" style="background: linear-gradient(135deg, rgba(50, 100, 0, 0.3) 0%, rgba(20, 50, 0, 0.3) 100%);">
+                        <span class="tournament-status status-registration">Открыта регистрация</span>
+                        <h3 class="tournament-name">Amateur Cup #12</h3>
+                        <p class="tournament-game">League of Legends • CIS</p>
+                    </div>
+                    <div class="tournament-body">
+                        <div class="tournament-prize-pool">$50,000</div>
+                        <div class="tournament-details">
+                            <div class="detail-item">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                <span>Начало: 10 Февраля</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                </svg>
+                                <span>64 команды</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                    <path d="M2 17l10 5 10-5"/>
+                                </svg>
+                                <span>Single Elim</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                <span>Online</span>
+                            </div>
+                        </div>
+                        <div class="tournament-progress">
+                            <div class="progress-label">
+                                <span>Зарегистрировано</span>
+                                <span>42/64</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 66%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tournament-footer">
+                        <div class="participants">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#00d4ff">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                            </svg>
+                            42 команды
+                        </div>
+                        <span class="view-details">Подробнее →</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Past Tournaments -->
+            <div class="past-tournaments">
+                <div class="section-header">
+                    <h2 class="section-title">Завершённые турниры</h2>
+                    <span class="view-all">Архив →</span>
+                </div>
+
+                <div class="tournament-table">
+                    <div class="table-header">
+                        <div>Турнир</div>
+                        <div>Победитель</div>
+                        <div>Призовые</div>
+                        <div>Дата</div>
+                        <div>Участников</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="tournament-name-col">Winter Championship 2026</div>
+                        <div class="winner-col">Team Phoenix</div>
+                        <div>$350,000</div>
+                        <div>20 Января</div>
+                        <div>96 команд</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="tournament-name-col">Global Masters Final</div>
+                        <div class="winner-col">Dark Warriors</div>
+                        <div>$750,000</div>
+                        <div>15 Января</div>
+                        <div>32 команды</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="tournament-name-col">New Year Cup 2026</div>
+                        <div class="winner-col">Cyber Dragons</div>
+                        <div>$100,000</div>
+                        <div>5 Января</div>
+                        <div>64 команды</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="tournament-name-col">Holiday Special Event</div>
+                        <div class="winner-col">Storm Riders</div>
+                        <div>$200,000</div>
+                        <div>28 Декабря</div>
+                        <div>128 команд</div>
+                    </div>
+                    <div class="table-row">
+                        <div class="tournament-name-col">Winter Invitational</div>
+                        <div class="winner-col">Elite Squad</div>
+                        <div>$150,000</div>
+                        <div>18 Декабря</div>
+                        <div>16 команд</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="logo">
+                <h1>CH</h1>
+            </div>
+            
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><a href="/templates/home.html"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></a></svg>
+                <span>Главная</span>
+            </div>
+            
+            <div class="nav-item active">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                <span><a href="/templates/tournaments.html">Турниры</a></span>
+            </div>
+            
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                <span>Ладдеры</span>
+            </div>
+            
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                <span>Помощь</span>
+            </div>
+            
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><a href="/templates/news.html"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></a></svg>
+                <span>Новости</span>
+            </div>
+            
+            <div class="user-info">
+                <div class="user-avatar">U</div>
+                <div class="user-name">user3698174</div>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        // Sidebar toggle for mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-toggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Tab buttons functionality
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Discipline cards functionality
+        const disciplineCards = document.querySelectorAll('.discipline-card');
+        disciplineCards.forEach(card => {
+            card.addEventListener('click', () => {
+                disciplineCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                
+                const discipline = card.dataset.discipline;
+                console.log('Selected discipline:', discipline);
+                // Here you would filter tournaments by discipline
+            });
+        });
+
+        // Tournament card clicks
+        const tournamentCards = document.querySelectorAll('.tournament-card, .table-row');
+        tournamentCards.forEach(card => {
+            card.addEventListener('click', () => {
+                alert('Открытие информации о турнире... (демо)');
+            });
+        });
+
+        // CTA buttons
+        const ctaBtns = document.querySelectorAll('.btn-primary, .btn-secondary');
+        ctaBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                alert('Действие: ' + btn.textContent + ' (демо)');
+            });
+        });
+
+        // View all links
+        const viewAllLinks = document.querySelectorAll('.view-all');
+        viewAllLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                alert('Переход к полному списку... (демо)');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberHero - Gaming Tournaments</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Right Sidebar Navigation */
+        .sidebar {
+            width: 100px;
+            background: rgba(15, 20, 40, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 0;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            height: 100vh;
+            right: 0;
+            top: 0;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(100%);
+        }
+
+        .logo {
+            padding: 0 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+
+        .nav-item {
+            padding: 1rem 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-right: 3px solid transparent;
+            margin: 0.2rem 0;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(0, 212, 255, 0.1);
+            border-right-color: #00d4ff;
+        }
+
+        .nav-item svg {
+            width: 28px;
+            height: 28px;
+            fill: #00d4ff;
+        }
+
+        .nav-item span {
+            font-size: 0.65rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .user-info {
+            padding: 1rem 0.5rem;
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .user-name {
+            font-size: 0.6rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            word-break: break-word;
+        }
+
+        /* Mobile Toggle */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1001;
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid #00d4ff;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-toggle:hover {
+            background: rgba(0, 212, 255, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-right: 100px;
+            padding: 2rem;
+            transition: margin-right 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        /* Hero Slider Section */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            margin-bottom: 3rem;
+        }
+
+        .slider-wrapper {
+            display: flex;
+            height: 100%;
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            color: white;
+            padding: 4rem;
+        }
+
+        .slide:nth-child(1) {
+            background: linear-gradient(135deg, rgba(0, 50, 100, 0.8) 0%, rgba(0, 20, 50, 0.9) 100%),
+                        linear-gradient(90deg, #001030 0%, #003060 100%);
+        }
+
+        .slide:nth-child(2) {
+            background: linear-gradient(135deg, rgba(100, 0, 50, 0.8) 0%, rgba(50, 0, 20, 0.9) 100%),
+                        linear-gradient(90deg, #300010 0%, #600030 100%);
+        }
+
+        .slide:nth-child(3) {
+            background: linear-gradient(135deg, rgba(0, 100, 100, 0.8) 0%, rgba(0, 50, 50, 0.9) 100%),
+                        linear-gradient(90deg, #001030 0%, #003060 100%);
+        }
+
+        .slide:nth-child(4) {
+            background: linear-gradient(135deg, rgba(50, 100, 0, 0.8) 0%, rgba(20, 50, 0, 0.9) 100%),
+                        linear-gradient(90deg, #103000 0%, #306000 100%);
+        }
+
+        .slide-content {
+            max-width: 600px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .slide-content h2 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .slide-content .prize {
+            font-size: 1.5rem;
+            color: #00d4ff;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .slide-content p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Navigation Arrows */
+        .arrow {
+            position: absolute;
+            bottom: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            padding: 12px 18px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .arrow:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .arrow-left {
+            right: 80px;
+        }
+
+        .arrow-right {
+            right: 20px;
+        }
+
+        /* Dots Navigation */
+        .dots-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: white;
+            width: 30px;
+            border-radius: 6px;
+        }
+
+        /* Timer Progress Bar */
+        .timer-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: #00d4ff;
+            width: 0%;
+            transition: width 0.1s linear;
+            z-index: 11;
+        }
+
+        /* Auth Button */
+        .auth-btn {
+            position: fixed;
+            top: 20px;
+            right: 120px;
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid #00d4ff;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .auth-btn:hover {
+            background: rgba(0, 212, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Modal Window */
+        .modal {
+            background: #1a1f2e;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 450px;
+            width: 90%;
+            position: relative;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-header h2 {
+            color: white;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 2em;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: white;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: rgba(0, 212, 255, 0.3);
+            color: white;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+        }
+
+        .modal-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9em;
+        }
+
+        .modal-footer a {
+            color: #00d4ff;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-footer a:hover {
+            color: #00f2ff;
+            text-decoration: underline;
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .disciplines-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .discipline-card {
+            background: rgba(20, 30, 60, 0.6);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .discipline-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .discipline-card:hover {
+            transform: translateY(-5px);
+            border-color: #00d4ff;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .discipline-card:hover::before {
+            opacity: 1;
+        }
+
+        .discipline-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            border-radius: 12px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .discipline-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Tournaments Section */
+        .tournaments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .tournament-card {
+            background: rgba(20, 30, 60, 0.6);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tournament-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tournament-card:hover {
+            border-color: #00d4ff;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.3);
+        }
+
+        .tournament-card:hover::before {
+            opacity: 1;
+        }
+
+        .tournament-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tournament-date {
+            background: rgba(0, 212, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .tournament-format {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .tournament-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tournament-prize {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #00d4ff;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tournament-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tournament-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.5);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .tournaments-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-right: 0;
+                padding: 5rem 1rem 2rem;
+            }
+
+            .auth-btn {
+                right: 5rem;
+            }
+
+            .slider-container {
+                height: 350px;
+            }
+
+            .slide {
+                padding: 2rem;
+            }
+
+            .slide-content h2 {
+                font-size: 2rem;
+            }
+
+            .slide-content .prize {
+                font-size: 1.2rem;
+            }
+
+            .slide-content p {
+                font-size: 1rem;
+            }
+
+            .disciplines-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 1rem;
+            }
+
+            .discipline-icon {
+                width: 60px;
+                height: 60px;
+            }
+
+            .tournaments-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tournament-card {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .slide-content h2 {
+                font-size: 1.5rem;
+            }
+
+            .section-header {
+                font-size: 1.3rem;
+            }
+
+            .disciplines-grid {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            }
+
+            .discipline-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+
+            .discipline-name {
+                font-size: 0.75rem;
+            }
+
+            .slider-container {
+                height: 300px;
+            }
+
+            .auth-btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(10, 14, 39, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 212, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Auth Button -->
+        <button class="auth-btn" id="loginBtn">Войти</button>
+
+        <!-- Mobile Toggle Button -->
+        <button class="mobile-toggle" onclick="toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Hero Slider Section -->
+            <div class="slider-container">
+                <div class="slider-wrapper" id="sliderWrapper">
+                    <div class="slide">
+                        <div class="slide-content">
+                            <h2>STANDOFF 2</h2>
+                            <p class="prize">15000+ GOLD</p>
+                            <p>ПРИЗОВЫХ ПО БУДНЯМ В ТУРНИРАХ</p>
+                        </div>
+                    </div>
+                    <div class="slide">
+                        <div class="slide-content">
+                            <h2>PUBG MOBILE</h2>
+                            <p class="prize">25000+ РУБЛЕЙ</p>
+                            <p>ЕЖЕНЕДЕЛЬНЫЕ ТУРНИРЫ</p>
+                        </div>
+                    </div>
+                    <div class="slide">
+                        <div class="slide-content">
+                            <h2>CS:GO</h2>
+                            <p class="prize">50000+ РУБЛЕЙ</p>
+                            <p>ЕЖЕМЕСЯЧНЫЙ ГРАНД-ФИНАЛ</p>
+                        </div>
+                    </div>
+                    <div class="slide">
+                        <div class="slide-content">
+                            <h2>DOTA 2</h2>
+                            <p class="prize">100000+ РУБЛЕЙ</p>
+                            <p>МЕЖДУНАРОДНЫЙ ТУРНИР</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="arrow arrow-left" id="prevBtn">‹</button>
+                <button class="arrow arrow-right" id="nextBtn">›</button>
+
+                <div class="dots-container" id="dotsContainer"></div>
+                
+                <div class="timer-bar" id="timerBar"></div>
+            </div>
+
+            <!-- Disciplines Section -->
+            <section class="section">
+                <h3 class="section-header">Доступные дисциплины:</h3>
+                <div class="disciplines-grid">
+                    <div class="discipline-card">
+                        <div class="discipline-icon">🔫</div>
+                        <div class="discipline-name">Standoff 2</div>
+                    </div>
+                    <div class="discipline-card">
+                        <div class="discipline-icon">🎮</div>
+                        <div class="discipline-name">PUBG</div>
+                    </div>
+                    <div class="discipline-card">
+                        <div class="discipline-icon">🎯</div>
+                        <div class="discipline-name">Dota 2</div>
+                    </div>
+                    <div class="discipline-card">
+                        <div class="discipline-icon">⚔️</div>
+                        <div class="discipline-name">Brawl Stars</div>
+                    </div>
+                    <div class="discipline-card">
+                        <div class="discipline-icon">🏃</div>
+                        <div class="discipline-name">Free Fire</div>
+                    </div>
+                    <div class="discipline-card">
+                        <div class="discipline-icon">🎪</div>
+                        <div class="discipline-name">Valorant</div>
+                    </div>
+                    <div class="discipline-card">
+                        <div class="discipline-icon">🏆</div>
+                        <div class="discipline-name">CS:GO</div>
+                    </div>
+                    <div class="discipline-card">
+                        <div class="discipline-icon">🎲</div>
+                        <div class="discipline-name">Apex</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tournaments Section -->
+            <section class="section">
+                <h3 class="section-header">Турниры</h3>
+                <div class="tournaments-grid">
+                    <div class="tournament-card">
+                        <div class="tournament-header">
+                            <div class="tournament-date">30.01.2028 22:00</div>
+                            <div class="tournament-format">1vs1</div>
+                        </div>
+                        <h4 class="tournament-title">STANDOFF 2 SOLO FAST CUP #1633</h4>
+                        <div class="tournament-prize">4 400 🥇</div>
+                        <button class="tournament-btn">Регистрация</button>
+                    </div>
+
+                    <div class="tournament-card">
+                        <div class="tournament-header">
+                            <div class="tournament-date">28.01.2028 12:00</div>
+                            <div class="tournament-format">1vs1</div>
+                        </div>
+                        <h4 class="tournament-title">STANDOFF 2 FREE #217</h4>
+                        <div class="tournament-prize">1 700 ⭐<br><span style="font-size: 1.2rem;">+ 6 000 ₽</span></div>
+                        <button class="tournament-btn">Регистрация</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Right Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <div class="logo">
+                <h1>CH</h1>
+            </div>
+            
+            <div class="nav-item active">
+                <svg viewBox="0 0 24 24"><a href="/templates/home.html"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></a></svg>
+                <span>Главная</span>
+            </div>
+            
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><a href="/templates/tournaments.html"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></a></svg>
+                <span>Турниры</span>
+            </div>
+            
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                <span>Ладдеры</span>
+            </div>
+            
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                <span>Помощь</span>
+            </div>
+            
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><a href="/templates/news.html"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></a></svg>
+                <span>Новости</span>
+            </div>
+            
+            <div class="user-info">
+                <a href="/templates/profile.html"><div class="user-avatar">U</div></a>
+                <div class="user-name">user3698174</div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <button class="close-btn" id="closeBtn">&times;</button>
+            <div class="modal-header">
+                <h2>ВХОД</h2>
+            </div>
+            
+            <div class="tabs">
+                <button class="tab active" data-tab="login">Логин</button>
+                <button class="tab" data-tab="phone">Телефон</button>
+            </div>
+
+            <form id="authForm">
+                <div class="form-group">
+                    <label for="loginInput">Логин или Email</label>
+                    <input type="text" id="loginInput" placeholder="Логин" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="passwordInput">Пароль</label>
+                    <input type="password" id="passwordInput" placeholder="Введите пароль" required>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe">Запомнить меня</label>
+                </div>
+
+                <button type="submit" class="submit-btn">ВОЙТИ</button>
+            </form>
+
+            <div class="modal-footer">
+                Нет аккаунта? <a id="registerBtn">Зарегистрироваться</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div class="modal-overlay" id="registerOverlay">
+        <div class="modal">
+            <button class="close-btn" id="closeRegisterBtn">&times;</button>
+            <div class="modal-header">
+                <h2>РЕГИСТРАЦИЯ</h2>
+            </div>
+            
+            <div class="tabs">
+                <button class="tab active" data-tab="email">Email</button>
+                <button class="tab" data-tab="phone">Телефон</button>
+            </div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regLoginInput">Логин</label>
+                    <input type="text" id="regLoginInput" placeholder="Придумайте логин" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regEmailInput">Email</label>
+                    <input type="email" id="regEmailInput" placeholder="Email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regPasswordInput">Пароль</label>
+                    <input type="password" id="regPasswordInput" placeholder="Придумайте пароль" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regConfirmPasswordInput">Подтвердите пароль</label>
+                    <input type="password" id="regConfirmPasswordInput" placeholder="Повторите пароль" required>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="agreeTerms" required>
+                    <label for="agreeTerms">Согласен с условиями использования</label>
+                </div>
+
+                <button type="submit" class="submit-btn">ЗАРЕГИСТРИРОВАТЬСЯ</button>
+            </form>
+
+            <div class="modal-footer">
+                Уже есть аккаунт? <a id="backToLoginBtn">Войти</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Slider functionality
+        const sliderWrapper = document.getElementById('sliderWrapper');
+        const dotsContainer = document.getElementById('dotsContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const timerBar = document.getElementById('timerBar');
+        
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        let currentSlide = 0;
+        let autoSlideInterval;
+        let timerInterval;
+        const slideDelay = 5000;
+
+        function createDots() {
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => goToSlide(i));
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function updateDots() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            sliderWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+            updateDots();
+            resetTimer();
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            goToSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            goToSlide(currentSlide);
+        }
+
+        function animateTimer() {
+            let progress = 0;
+            const step = 100 / (slideDelay / 100);
+            
+            clearInterval(timerInterval);
+            timerBar.style.width = '0%';
+            
+            timerInterval = setInterval(() => {
+                progress += step;
+                timerBar.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(timerInterval);
+                }
+            }, 100);
+        }
+
+        function resetTimer() {
+            clearInterval(autoSlideInterval);
+            animateTimer();
+            autoSlideInterval = setInterval(nextSlide, slideDelay);
+        }
+
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+
+        const sliderContainer = document.querySelector('.slider-container');
+        sliderContainer.addEventListener('mouseenter', () => {
+            clearInterval(autoSlideInterval);
+            clearInterval(timerInterval);
+        });
+
+        sliderContainer.addEventListener('mouseleave', () => {
+            resetTimer();
+        });
+
+        createDots();
+        resetTimer();
+
+        // Sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-toggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Modal functionality
+        const loginBtn = document.getElementById('loginBtn');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const closeBtn = document.getElementById('closeBtn');
+        const authForm = document.getElementById('authForm');
+        const tabs = document.querySelectorAll('#modalOverlay .tab');
+        const loginInput = document.getElementById('loginInput');
+
+        const registerOverlay = document.getElementById('registerOverlay');
+        const closeRegisterBtn = document.getElementById('closeRegisterBtn');
+        const registerForm = document.getElementById('registerForm');
+        const registerBtn = document.getElementById('registerBtn');
+        const backToLoginBtn = document.getElementById('backToLoginBtn');
+        const regEmailInput = document.getElementById('regEmailInput');
+        const registerTabs = registerOverlay.querySelectorAll('.tab');
+
+        loginBtn.addEventListener('click', () => {
+            modalOverlay.classList.add('active');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+        });
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('active');
+            }
+        });
+
+        registerBtn.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+            registerOverlay.classList.add('active');
+        });
+
+        closeRegisterBtn.addEventListener('click', () => {
+            registerOverlay.classList.remove('active');
+        });
+
+        registerOverlay.addEventListener('click', (e) => {
+            if (e.target === registerOverlay) {
+                registerOverlay.classList.remove('active');
+            }
+        });
+
+        backToLoginBtn.addEventListener('click', () => {
+            registerOverlay.classList.remove('active');
+            modalOverlay.classList.add('active');
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (modalOverlay.classList.contains('active')) {
+                    modalOverlay.classList.remove('active');
+                }
+                if (registerOverlay.classList.contains('active')) {
+                    registerOverlay.classList.remove('active');
+                }
+            }
+        });
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                if (tab.dataset.tab === 'phone') {
+                    loginInput.placeholder = 'Номер телефона';
+                    loginInput.type = 'tel';
+                } else {
+                    loginInput.placeholder = 'Логин';
+                    loginInput.type = 'text';
+                }
+            });
+        });
+
+        registerTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                registerTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                if (tab.dataset.tab === 'phone') {
+                    regEmailInput.placeholder = 'Номер телефона';
+                    regEmailInput.type = 'tel';
+                } else {
+                    regEmailInput.placeholder = 'Email';
+                    regEmailInput.type = 'email';
+                }
+            });
+        });
+
+        authForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const login = loginInput.value;
+            const password = document.getElementById('passwordInput').value;
+            
+            console.log('Login attempt:', { login, password });
+            alert('Вход выполнен! (демо)');
+            modalOverlay.classList.remove('active');
+            authForm.reset();
+        });
+
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const login = document.getElementById('regLoginInput').value;
+            const email = regEmailInput.value;
+            const password = document.getElementById('regPasswordInput').value;
+            const confirmPassword = document.getElementById('regConfirmPasswordInput').value;
+            const agreedToTerms = document.getElementById('agreeTerms').checked;
+
+            if (password !== confirmPassword) {
+                alert('Пароли не совпадают!');
+                return;
+            }
+
+            if (!agreedToTerms) {
+                alert('Необходимо согласиться с условиями использования');
+                return;
+            }
+
+            console.log('Registration attempt:', { login, email, password, agreedToTerms });
+            alert('Регистрация успешна! (демо)');
+            registerOverlay.classList.remove('active');
+            registerForm.reset();
+        });
+    </script>
+</body>
+</html>
