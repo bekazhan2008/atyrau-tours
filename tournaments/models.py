@@ -16,8 +16,19 @@ class Tournament(models.Model):
         ('round_robin', 'Round Robin'),
     ]
 
+    GAME_CHOICES = [
+        ('standoff2', 'Standoff 2'),
+        ('pubg', 'PUBG Mobile'),
+        ('csgo', 'CS:GO'),
+        ('dota2', 'Dota 2'),
+        ('valorant', 'Valorant'),
+        ('freefire', 'Free Fire'),
+        ('brawlstars', 'Brawl Stars'),
+        ('apex', 'Apex Legends'),
+    ]
+
     name = models.CharField(max_length=255, verbose_name='Название турнира')
-    game = models.CharField(max_length=255, verbose_name='Игра')
+    game = models.CharField(max_length=50, choices=GAME_CHOICES, verbose_name='Игра')
     region = models.CharField(max_length=255, verbose_name='Регион')
     prize_pool = models.CharField(max_length=50, verbose_name='Призовой фонд')
     start_date = models.DateTimeField(verbose_name='Дата и время начала')
@@ -30,6 +41,8 @@ class Tournament(models.Model):
 
     class Meta:
         ordering  = ['-start_date']
+        verbose_name = 'Турнир'
+        verbose_name_plural = 'Турниры'
 
     def __str__(self):
         return self.name
@@ -43,6 +56,8 @@ class PastTournament(models.Model):
     
     class Meta:
         ordering = ['-completion_date']
+        verbose_name = 'Прошлый турнир'
+        verbose_name_plural = 'Прошлые турниры'
     
     def __str__(self):
         return self.name
