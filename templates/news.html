@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberHero - Новости</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Right Sidebar Navigation */
+        .sidebar {
+            width: 100px;
+            background: rgba(15, 20, 40, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 0;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            height: 100vh;
+            right: 0;
+            top: 0;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(100%);
+        }
+
+        .logo {
+            padding: 0 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+
+        .nav-item {
+            padding: 1rem 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-right: 3px solid transparent;
+            margin: 0.2rem 0;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(0, 212, 255, 0.1);
+            border-right-color: #00d4ff;
+        }
+
+        .nav-item svg {
+            width: 28px;
+            height: 28px;
+            fill: #00d4ff;
+        }
+
+        .nav-item span {
+            font-size: 0.65rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .user-info {
+            padding: 1rem 0.5rem;
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .user-name {
+            font-size: 0.6rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            word-break: break-word;
+        }
+
+        /* Mobile Toggle */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1001;
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid #00d4ff;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-toggle:hover {
+            background: rgba(0, 212, 255, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-right: 100px;
+            padding: 2rem;
+            transition: margin-right 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-right: 0;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+        }
+
+        /* News Filters */
+        .news-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        /* Featured News */
+        .featured-news {
+            margin-bottom: 3rem;
+        }
+
+        .featured-card {
+            position: relative;
+            height: 500px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(0, 50, 100, 0.8) 0%, rgba(0, 20, 50, 0.9) 100%),
+                        linear-gradient(90deg, #001030 0%, #003060 100%);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .featured-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .featured-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 3rem;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
+        }
+
+        .news-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid #00d4ff;
+            border-radius: 20px;
+            color: #00d4ff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .featured-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .featured-excerpt {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .news-meta {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .news-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* News Grid */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .news-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            border-color: #00d4ff;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(0, 100, 100, 0.8) 0%, rgba(0, 50, 50, 0.9) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .news-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+        }
+
+        .news-card-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: #fff;
+            line-height: 1.4;
+        }
+
+        .news-card-excerpt {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        .news-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .read-more {
+            color: #00d4ff;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: gap 0.3s ease;
+        }
+
+        .news-card:hover .read-more {
+            gap: 0.75rem;
+        }
+
+        /* Load More Button */
+        .load-more {
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .load-more-btn {
+            padding: 1rem 3rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid #00d4ff;
+            border-radius: 12px;
+            color: #00d4ff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .load-more-btn:hover {
+            background: #00d4ff;
+            color: #0a0e27;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .mobile-toggle {
+                display: block;
+            }
+
+            .sidebar {
+                transform: translateX(100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-right: 0;
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .featured-card {
+                height: 400px;
+            }
+
+            .featured-content {
+                padding: 2rem;
+            }
+
+            .featured-title {
+                font-size: 1.75rem;
+            }
+
+            .news-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .news-filters {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding-bottom: 0.5rem;
+            }
+
+            .filter-btn {
+                white-space: nowrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .featured-title {
+                font-size: 1.5rem;
+            }
+
+            .featured-excerpt {
+                font-size: 1rem;
+            }
+
+            .news-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Mobile Toggle -->
+        <div class="mobile-toggle" onclick="toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">НОВОСТИ</h1>
+                <p class="page-subtitle">Последние обновления из мира киберспорта</p>
+            </div>
+
+            <!-- News Filters -->
+            <div class="news-filters">
+                <button class="filter-btn active">Все новости</button>
+                <button class="filter-btn">Турниры</button>
+                <button class="filter-btn">Обновления</button>
+                <button class="filter-btn">Команды</button>
+                <button class="filter-btn">Патчи</button>
+                <button class="filter-btn">Интервью</button>
+            </div>
+
+            <!-- Featured News -->
+            <div class="featured-news">
+                <div class="featured-card">
+                    <div class="featured-content">
+                        <span class="news-badge">🔥 Горячее</span>
+                        <h2 class="featured-title">Финал CyberHero Championship 2026: Эпическое противостояние</h2>
+                        <p class="featured-excerpt">
+                            Грандиозный финал международного турнира собрал более 2 миллионов зрителей онлайн. 
+                            Team Phoenix и Dark Warriors сразились за призовой фонд в 500,000$. Матч длился 
+                            рекордные 87 минут и завершился невероятным камбэком.
+                        </p>
+                        <div class="news-meta">
+                            <span>📅 31 Января 2026</span>
+                            <span>👁 2.3М просмотров</span>
+                            <span>💬 1.2К комментариев</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News Grid -->
+            <div class="news-grid">
+                <!-- News Card 1 -->
+                <div class="news-card">
+                    <div class="news-image" style="background: linear-gradient(135deg, rgba(100, 0, 50, 0.8) 0%, rgba(50, 0, 20, 0.9) 100%);">
+                        🏆
+                    </div>
+                    <div class="news-card-content">
+                        <span class="news-badge">Турниры</span>
+                        <h3 class="news-card-title">Анонсирован новый сезон CyberLeague</h3>
+                        <p class="news-card-excerpt">
+                            Организаторы объявили о старте четвёртого сезона CyberLeague с увеличенным 
+                            призовым фондом и новым форматом проведения. Регистрация команд открыта.
+                        </p>
+                        <div class="news-card-meta">
+                            <span>30 Января 2026</span>
+                            <span class="read-more">Читать далее →</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- News Card 2 -->
+                <div class="news-card">
+                    <div class="news-image" style="background: linear-gradient(135deg, rgba(0, 100, 100, 0.8) 0%, rgba(0, 50, 50, 0.9) 100%);">
+                        ⚡
+                    </div>
+                    <div class="news-card-content">
+                        <span class="news-badge">Обновления</span>
+                        <h3 class="news-card-title">Патч 3.5: Масштабное обновление баланса</h3>
+                        <p class="news-card-excerpt">
+                            Разработчики выпустили крупное обновление, которое серьёзно изменит мету. 
+                            Усилены 12 героев, ослаблены 8, добавлены новые предметы и механики.
+                        </p>
+                        <div class="news-card-meta">
+                            <span>29 Января 2026</span>
+                            <span class="read-more">Читать далее →</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- News Card 3 -->
+                <div class="news-card">
+                    <div class="news-image" style="background: linear-gradient(135deg, rgba(50, 100, 0, 0.8) 0%, rgba(20, 50, 0, 0.9) 100%);">
+                        👥
+                    </div>
+                    <div class="news-card-content">
+                        <span class="news-badge">Команды</span>
+                        <h3 class="news-card-title">Team Phoenix объявила о новом составе</h3>
+                        <p class="news-card-excerpt">
+                            Действующие чемпионы провели перестановки в составе. Капитан команды дал 
+                            эксклюзивное интервью о планах на предстоящий сезон.
+                        </p>
+                        <div class="news-card-meta">
+                            <span>28 Января 2026</span>
+                            <span class="read-more">Читать далее →</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- News Card 4 -->
+                <div class="news-card">
+                    <div class="news-image" style="background: linear-gradient(135deg, rgba(0, 50, 100, 0.8) 0%, rgba(0, 20, 50, 0.9) 100%);">
+                        🎮
+                    </div>
+                    <div class="news-card-content">
+                        <span class="news-badge">События</span>
+                        <h3 class="news-card-title">CyberFest 2026: Программа мероприятия</h3>
+                        <p class="news-card-excerpt">
+                            Опубликована полная программа крупнейшего киберспортивного фестиваля года. 
+                            Ожидается участие более 50 команд со всего мира.
+                        </p>
+                        <div class="news-card-meta">
+                            <span>27 Января 2026</span>
+                            <span class="read-more">Читать далее →</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- News Card 5 -->
+                <div class="news-card">
+                    <div class="news-image" style="background: linear-gradient(135deg, rgba(100, 50, 0, 0.8) 0%, rgba(50, 20, 0, 0.9) 100%);">
+                        🎤
+                    </div>
+                    <div class="news-card-content">
+                        <span class="news-badge">Интервью</span>
+                        <h3 class="news-card-title">Интервью с легендой: 10 лет в киберспорте</h3>
+                        <p class="news-card-excerpt">
+                            Ветеран киберспорта поделился воспоминаниями о становлении индустрии, 
+                            самых запоминающихся матчах и дал советы начинающим игрокам.
+                        </p>
+                        <div class="news-card-meta">
+                            <span>26 Января 2026</span>
+                            <span class="read-more">Читать далее →</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- News Card 6 -->
+                <div class="news-card">
+                    <div class="news-image" style="background: linear-gradient(135deg, rgba(100, 0, 100, 0.8) 0%, rgba(50, 0, 50, 0.9) 100%);">
+                        📊
+                    </div>
+                    <div class="news-card-content">
+                        <span class="news-badge">Аналитика</span>
+                        <h3 class="news-card-title">Статистика турнира: Топ моменты и рекорды</h3>
+                        <p class="news-card-excerpt">
+                            Подробный разбор статистики прошедшего турнира. Самые впечатляющие показатели, 
+                            рекорды и неожиданные открытия сезона.
+                        </p>
+                        <div class="news-card-meta">
+                            <span>25 Января 2026</span>
+                            <span class="read-more">Читать далее →</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Load More -->
+            <div class="load-more">
+                <button class="load-more-btn">Загрузить ещё</button>
+            </div>
+        </main>
+
+        <!-- Right Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="logo">
+                <h1>CH</h1>
+            </div>
+            
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><a href="/templates/home.html"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></a></svg>
+                <span>Главная</span>
+            </div>
+            
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><a href="/templates/tournaments.html"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></a></svg>
+                <span>Турниры</span>
+            </div>
+            
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                <span>Ладдеры</span>
+            </div>
+            
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                <span>Помощь</span>
+            </div>
+            
+            <div class="nav-item active">
+                <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                <span>Новости</span>
+            </div>
+            
+            <div class="user-info">
+                <div class="user-avatar">U</div>
+                <div class="user-name">user3698174</div>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        // Sidebar toggle for mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-toggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        // Filter buttons functionality
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Load more functionality
+        const loadMoreBtn = document.querySelector('.load-more-btn');
+        loadMoreBtn.addEventListener('click', () => {
+            alert('Загрузка дополнительных новостей... (демо)');
+        });
+
+        // News card click
+        const newsCards = document.querySelectorAll('.news-card, .featured-card');
+        newsCards.forEach(card => {
+            card.addEventListener('click', () => {
+                alert('Открытие полной статьи... (демо)');
+            });
+        });
+    </script>
+</body>
+</html>
