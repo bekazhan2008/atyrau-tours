@@ -841,28 +841,29 @@
                 </div>
             </div>
 
-            <!-- Active Tournament Hero -->
+            <!-- Replace the Active Tournament Hero section with: -->
+            {% if active_tournament %}
             <div class="active-tournament">
                 <div class="tournament-hero-content">
                     <span class="tournament-badge">🔴 LIVE СЕЙЧАС</span>
-                    <h2 class="tournament-hero-title">CyberHero Championship 2026</h2>
-                    <div class="tournament-prize">$500,000</div>
+                    <h2 class="tournament-hero-title">{{ active_tournament.name }}</h2>
+                    <div class="tournament-prize">{{ active_tournament.prize_pool }}</div>
                     <div class="tournament-info">
                         <div class="info-item">
                             <span class="info-label">Статус</span>
-                            <span class="info-value">Полуфинал</span>
+                            <span class="info-value">{{ active_tournament.get_status_display }}</span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Участников</span>
-                            <span class="info-value">64 команды</span>
+                            <span class="info-value">{{ active_tournament.registered_teams }} команд</span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Формат</span>
-                            <span class="info-value">Single Elimination</span>
+                            <span class="info-value">{{ active_tournament.get_format_display }}</span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">Зрителей</span>
-                            <span class="info-value">2.3M Online</span>
+                            <span class="info-label">Место</span>
+                            <span class="info-value">{{ active_tournament.location }}</span>
                         </div>
                     </div>
                     <div class="tournament-cta">
@@ -871,62 +872,56 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
 
-            <!-- Upcoming Tournaments -->
-            <div class="section-header">
-                <h2 class="section-title">Предстоящие турниры</h2>
-                <span class="view-all">Смотреть все →</span>
-            </div>
-
+            <!-- Replace Upcoming Tournaments Grid with: -->
             <div class="tournaments-grid">
-                <!-- Tournament Card 1 -->
+                {% for tournament in tournaments %}
                 <div class="tournament-card">
                     <div class="tournament-header">
-                        <span class="tournament-status status-registration">Открыта регистрация</span>
-                        <h3 class="tournament-name">Spring Championship</h3>
-                        <p class="tournament-game">Dota 2 • EU West</p>
+                        <span class="tournament-status status-{{ tournament.status }}">
+                            {{ tournament.get_status_display }}
+                        </span>
+                        <h3 class="tournament-name">{{ tournament.name }}</h3>
+                        <p class="tournament-game">{{ tournament.game }} • {{ tournament.region }}</p>
                     </div>
                     <div class="tournament-body">
-                        <div class="tournament-prize-pool">$250,000</div>
+                        <div class="tournament-prize-pool">{{ tournament.prize_pool }}</div>
                         <div class="tournament-details">
                             <div class="detail-item">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <circle cx="12" cy="12" r="10"/>
                                     <polyline points="12 6 12 12 16 14"/>
                                 </svg>
-                                <span>Начало: 15 Февраля</span>
+                                <span>Начало: {{ tournament.start_date|date:"j E" }}</span>
                             </div>
                             <div class="detail-item">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                                     <circle cx="9" cy="7" r="4"/>
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                                 </svg>
-                                <span>128 команд</span>
+                                <span>{{ tournament.max_teams }} команд</span>
                             </div>
                             <div class="detail-item">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                                    <path d="M2 17l10 5 10-5"/>
                                 </svg>
-                                <span>Double Elim</span>
+                                <span>{{ tournament.get_format_display }}</span>
                             </div>
                             <div class="detail-item">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                                    <circle cx="12" cy="10" r="3"/>
                                 </svg>
-                                <span>Online</span>
+                                <span>{{ tournament.location }}</span>
                             </div>
                         </div>
                         <div class="tournament-progress">
                             <div class="progress-label">
                                 <span>Зарегистрировано</span>
-                                <span>87/128</span>
+                                <span>{{ tournament.registered_teams }}/{{ tournament.max_teams }}</span>
                             </div>
                             <div class="progress-bar">
-                                <div class="progress-fill" style="width: 68%;"></div>
+                                <div class="progress-fill" data-registered="{{ tournament.registered_teams }}" data-max="{{ tournament.max_teams }}"></div>
                             </div>
                         </div>
                     </div>
@@ -934,188 +929,35 @@
                         <div class="participants">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="#00d4ff">
                                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                <circle cx="9" cy="7" r="4"/>
                             </svg>
-                            87 команд
+                            {{ tournament.registered_teams }} команд
                         </div>
                         <span class="view-details">Подробнее →</span>
                     </div>
                 </div>
-
-                <!-- Tournament Card 2 -->
-                <div class="tournament-card">
-                    <div class="tournament-header" style="background: linear-gradient(135deg, rgba(100, 0, 50, 0.3) 0%, rgba(50, 0, 20, 0.3) 100%);">
-                        <span class="tournament-status status-upcoming">Скоро</span>
-                        <h3 class="tournament-name">Pro League Season 4</h3>
-                        <p class="tournament-game">CS:GO • Global</p>
-                    </div>
-                    <div class="tournament-body">
-                        <div class="tournament-prize-pool">$1,000,000</div>
-                        <div class="tournament-details">
-                            <div class="detail-item">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <polyline points="12 6 12 12 16 14"/>
-                                </svg>
-                                <span>Начало: 1 Марта</span>
-                            </div>
-                            <div class="detail-item">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="9" cy="7" r="4"/>
-                                </svg>
-                                <span>32 команды</span>
-                            </div>
-                            <div class="detail-item">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                                    <path d="M2 17l10 5 10-5"/>
-                                </svg>
-                                <span>Swiss System</span>
-                            </div>
-                            <div class="detail-item">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                                    <circle cx="12" cy="10" r="3"/>
-                                </svg>
-                                <span>LAN Final</span>
-                            </div>
-                        </div>
-                        <div class="tournament-progress">
-                            <div class="progress-label">
-                                <span>До начала</span>
-                                <span>29 дней</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 35%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tournament-footer">
-                        <div class="participants">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#00d4ff">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                <circle cx="9" cy="7" r="4"/>
-                            </svg>
-                            Только приглашения
-                        </div>
-                        <span class="view-details">Подробнее →</span>
-                    </div>
-                </div>
-
-                <!-- Tournament Card 3 -->
-                <div class="tournament-card">
-                    <div class="tournament-header" style="background: linear-gradient(135deg, rgba(50, 100, 0, 0.3) 0%, rgba(20, 50, 0, 0.3) 100%);">
-                        <span class="tournament-status status-registration">Открыта регистрация</span>
-                        <h3 class="tournament-name">Amateur Cup #12</h3>
-                        <p class="tournament-game">League of Legends • CIS</p>
-                    </div>
-                    <div class="tournament-body">
-                        <div class="tournament-prize-pool">$50,000</div>
-                        <div class="tournament-details">
-                            <div class="detail-item">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <polyline points="12 6 12 12 16 14"/>
-                                </svg>
-                                <span>Начало: 10 Февраля</span>
-                            </div>
-                            <div class="detail-item">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="9" cy="7" r="4"/>
-                                </svg>
-                                <span>64 команды</span>
-                            </div>
-                            <div class="detail-item">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                                    <path d="M2 17l10 5 10-5"/>
-                                </svg>
-                                <span>Single Elim</span>
-                            </div>
-                            <div class="detail-item">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                                    <circle cx="12" cy="10" r="3"/>
-                                </svg>
-                                <span>Online</span>
-                            </div>
-                        </div>
-                        <div class="tournament-progress">
-                            <div class="progress-label">
-                                <span>Зарегистрировано</span>
-                                <span>42/64</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 66%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tournament-footer">
-                        <div class="participants">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#00d4ff">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                <circle cx="9" cy="7" r="4"/>
-                            </svg>
-                            42 команды
-                        </div>
-                        <span class="view-details">Подробнее →</span>
-                    </div>
-                </div>
+                {% empty %}
+                <p>Турниры не найдены</p>
+                {% endfor %}
             </div>
 
-            <!-- Past Tournaments -->
-            <div class="past-tournaments">
-                <div class="section-header">
-                    <h2 class="section-title">Завершённые турниры</h2>
-                    <span class="view-all">Архив →</span>
+            <!-- Replace Past Tournaments Table with: -->
+            <div class="tournament-table">
+                <div class="table-header">
+                    <div>Турнир</div>
+                    <div>Победитель</div>
+                    <div>Призовые</div>
+                    <div>Дата</div>
+                    <div>Участников</div>
                 </div>
-
-                <div class="tournament-table">
-                    <div class="table-header">
-                        <div>Турнир</div>
-                        <div>Победитель</div>
-                        <div>Призовые</div>
-                        <div>Дата</div>
-                        <div>Участников</div>
-                    </div>
-                    <div class="table-row">
-                        <div class="tournament-name-col">Winter Championship 2026</div>
-                        <div class="winner-col">Team Phoenix</div>
-                        <div>$350,000</div>
-                        <div>20 Января</div>
-                        <div>96 команд</div>
-                    </div>
-                    <div class="table-row">
-                        <div class="tournament-name-col">Global Masters Final</div>
-                        <div class="winner-col">Dark Warriors</div>
-                        <div>$750,000</div>
-                        <div>15 Января</div>
-                        <div>32 команды</div>
-                    </div>
-                    <div class="table-row">
-                        <div class="tournament-name-col">New Year Cup 2026</div>
-                        <div class="winner-col">Cyber Dragons</div>
-                        <div>$100,000</div>
-                        <div>5 Января</div>
-                        <div>64 команды</div>
-                    </div>
-                    <div class="table-row">
-                        <div class="tournament-name-col">Holiday Special Event</div>
-                        <div class="winner-col">Storm Riders</div>
-                        <div>$200,000</div>
-                        <div>28 Декабря</div>
-                        <div>128 команд</div>
-                    </div>
-                    <div class="table-row">
-                        <div class="tournament-name-col">Winter Invitational</div>
-                        <div class="winner-col">Elite Squad</div>
-                        <div>$150,000</div>
-                        <div>18 Декабря</div>
-                        <div>16 команд</div>
-                    </div>
+                {% for tournament in past_tournaments %}
+                <div class="table-row">
+                    <div class="tournament-name-col">{{ tournament.name }}</div>
+                    <div class="winner-col">{{ tournament.winner }}</div>
+                    <div>{{ tournament.prize_pool }}</div>
+                    <div>{{ tournament.completion_date|date:"j E" }}</div>
+                    <div>{{ tournament.teams_count }} команд</div>
                 </div>
+                {% endfor %}
             </div>
         </main>
 
@@ -1136,18 +978,10 @@
             </div>
             
             <div class="nav-item">
-                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                <span>Ладдеры</span>
-            </div>
-            
-            <div class="nav-item">
-                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                <span>Помощь</span>
-            </div>
-            
-            <div class="nav-item">
-                <svg viewBox="0 0 24 24"><a href="/templates/news.html"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></a></svg>
-                <span>Новости</span>
+                <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                <a href="{% url 'tournaments:news' %}" style="display: flex; flex-direction: column; align-items: center; gap: 0.4rem; text-decoration: none; color: inherit; width: 100%;">
+                    <span>Новости</span>
+                </a>
             </div>
             
             <div class="user-info">
