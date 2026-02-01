@@ -16,10 +16,25 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+from tournaments.views import home, tournaments_list, news_list
+from users.views import api_login, api_register, logout_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('users.urls')),
-    path('tournaments/', include('tournaments.urls', namespace='tournaments')),
-    path('news/', include('news.urls')),
+    path('', home, name='home'),
+    path('tournaments/', tournaments_list, name='tournaments'),
+    path('news/', news_list, name='news'),
+    
+    # API endpoints
+    path('api/login/', api_login, name='api_login'),
+    path('api/register/', api_register, name='api_register'),
+    path('logout/', logout_view, name='logout'),
+    
+    # Auth URLs
+    path('auth/', include('users.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
