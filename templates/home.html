@@ -1,11 +1,9 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberHero - Gaming Tournaments</title>
+    <title>ThunderCup - Главная</title>
     <style>
         * {
             margin: 0;
@@ -14,8 +12,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(180deg, #0a1628 0%, #1a2332 100%);
             color: #fff;
             min-height: 100vh;
         }
@@ -25,1389 +23,1290 @@
             min-height: 100vh;
         }
 
-        /* Right Sidebar Navigation */
-        .sidebar {
-            width: 100px;
-            background: rgba(15, 20, 40, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1.5rem 0;
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        /* Burger Menu Button */
+        .burger-menu {
+            display: none;
             position: fixed;
-            height: 100vh;
-            right: 0;
-            top: 0;
-            transition: transform 0.3s ease;
-            z-index: 1000;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: #0d1117;
+            border: 1px solid #1f2937;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .sidebar.hidden {
-            transform: translateX(100%);
+        .burger-menu:hover {
+            background: #1f2937;
+        }
+
+        .burger-menu span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .burger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .burger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .burger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Mobile Overlay */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            z-index: 99;
+            transition: background 0.3s ease;
+        }
+
+        .mobile-overlay.active {
+            display: block;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 90px;
+            background: #0d1117;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            border-right: 1px solid #1f2937;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 100;
+            transition: transform 0.3s ease;
         }
 
         .logo {
-            padding: 0 1rem;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .logo h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 2px;
-        }
-
-        .nav-item {
-            padding: 1rem 0.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.4rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-right: 3px solid transparent;
-            margin: 0.2rem 0;
-        }
-
-        .nav-item:hover,
-        .nav-item.active {
-            background: rgba(0, 212, 255, 0.1);
-            border-right-color: #00d4ff;
-        }
-
-        .nav-item svg {
-            width: 28px;
-            height: 28px;
-            fill: #00d4ff;
-        }
-
-        .nav-item span {
-            font-size: 0.65rem;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 500;
-        }
-
-        .user-info {
-            padding: 1rem 0.5rem;
-            margin-top: auto;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-
-        .user-name {
-            font-size: 0.6rem;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.6);
-            word-break: break-word;
-        }
-
-        /* Mobile Toggle */
-        .mobile-toggle {
-            display: none;
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 1001;
-            background: rgba(0, 212, 255, 0.2);
-            border: 1px solid #00d4ff;
-            padding: 0.75rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .mobile-toggle:hover {
-            background: rgba(0, 212, 255, 0.3);
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-right: 100px;
-            padding: 2rem;
-            transition: margin-right 0.3s ease;
-        }
-
-        .main-content.expanded {
-            margin-right: 0;
-        }
-
-        /* Hero Slider Section */
-        .slider-container {
-            position: relative;
-            width: 100%;
-            height: 500px;
-            overflow: hidden;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            margin-bottom: 3rem;
-        }
-
-        .slider-wrapper {
-            display: flex;
-            height: 100%;
-            transition: transform 0.6s ease-in-out;
-        }
-
-        .slide {
-            min-width: 100%;
-            height: 100%;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            color: white;
-            padding: 4rem;
-        }
-
-        .slide:nth-child(1) {
-            background: linear-gradient(135deg, rgba(0, 50, 100, 0.8) 0%, rgba(0, 20, 50, 0.9) 100%),
-                        linear-gradient(90deg, #001030 0%, #003060 100%);
-        }
-
-        .slide:nth-child(2) {
-            background: linear-gradient(135deg, rgba(100, 0, 50, 0.8) 0%, rgba(50, 0, 20, 0.9) 100%),
-                        linear-gradient(90deg, #300010 0%, #600030 100%);
-        }
-
-        .slide:nth-child(3) {
-            background: linear-gradient(135deg, rgba(0, 100, 100, 0.8) 0%, rgba(0, 50, 50, 0.9) 100%),
-                        linear-gradient(90deg, #001030 0%, #003060 100%);
-        }
-
-        .slide:nth-child(4) {
-            background: linear-gradient(135deg, rgba(50, 100, 0, 0.8) 0%, rgba(20, 50, 0, 0.9) 100%),
-                        linear-gradient(90deg, #103000 0%, #306000 100%);
-        }
-
-        .slide-content {
-            max-width: 600px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .slide-content h2 {
-            font-size: 3.5rem;
-            font-weight: 900;
-            margin-bottom: 1.5rem;
-            letter-spacing: 3px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .slide-content .prize {
-            font-size: 1.5rem;
-            color: #00d4ff;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .slide-content p {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.9);
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Navigation Arrows */
-        .arrow {
-            position: absolute;
-            bottom: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            font-size: 1.5em;
-            padding: 12px 18px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            z-index: 10;
-            backdrop-filter: blur(10px);
             width: 50px;
             height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-bottom: 40px;
+            cursor: pointer;
         }
 
-        .arrow:hover {
-            background: rgba(255, 255, 255, 0.4);
-            transform: scale(1.05);
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
-        .arrow-left {
-            right: 80px;
+        .nav-items {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
         }
 
-        .arrow-right {
-            right: 20px;
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 10px;
+            border-radius: 8px;
         }
 
-        /* Dots Navigation */
-        .dots-container {
+        .nav-item:hover {
+            background: #1f2937;
+        }
+
+        .nav-item.active {
+            background: #1f2937;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .nav-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .nav-item.active .nav-label {
+            color: #fff;
+        }
+
+        .login-btn {
+            margin-top: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #fff;
+            color: #0d1117;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: calc(100% - 20px);
+        }
+
+        .login-btn:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 40px 60px;
+            margin-left: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* Carousel */
+        .carousel {
+            position: relative;
+            width: 100%;
+            margin: 0 auto 60px;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            border-radius: 16px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .carousel-slides {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-indicators {
             position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 10px;
+            gap: 8px;
             z-index: 10;
         }
 
-        .dot {
-            width: 12px;
-            height: 12px;
+        .carousel-indicator {
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.5);
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .dot.active {
-            background: white;
-            width: 30px;
-            border-radius: 6px;
+        .carousel-indicator.active {
+            background: #fff;
+            width: 24px;
+            border-radius: 5px;
         }
 
-        /* Timer Progress Bar */
-        .timer-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 4px;
-            background: #00d4ff;
-            width: 0%;
-            transition: width 0.1s linear;
-            z-index: 11;
-        }
-
-        /* Auth Button */
-        .auth-btn {
-            position: fixed;
-            top: 20px;
-            right: 120px;
-            background: rgba(0, 212, 255, 0.2);
-            border: 1px solid #00d4ff;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            z-index: 100;
-        }
-
-        .auth-btn:hover {
-            background: rgba(0, 212, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        /* Modal Overlay */
-        .modal-overlay {
+        /* Authorization Modal */
+        .auth-modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            z-index: 2000;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-            justify-content: center;
+            background: rgba(0, 0, 0, 0);
+            z-index: 1000;
             align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .auth-modal.active {
+            display: flex;
+            background: rgba(0, 0, 0, 0.7);
         }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Modal Window */
-        .modal {
+        .auth-modal-content {
             background: #1a1f2e;
             border-radius: 16px;
-            padding: 40px;
-            max-width: 450px;
             width: 90%;
+            max-width: 480px;
             position: relative;
-            animation: slideUp 0.3s ease;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transform: scale(0.7);
+            opacity: 0;
+            transition: all 0.3s ease;
         }
 
-        .modal-header {
+        .auth-modal.active .auth-modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .auth-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 28px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease;
+            line-height: 1;
+        }
+
+        .auth-modal-close:hover {
+            color: #fff;
+        }
+
+        .auth-modal-title {
+            font-size: 24px;
+            font-weight: 700;
             text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
             margin-bottom: 30px;
         }
 
-        .modal-header h2 {
-            color: white;
-            font-size: 1.8em;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 2em;
-            cursor: pointer;
-            line-height: 1;
-            transition: color 0.3s ease;
-        }
-
-        .close-btn:hover {
-            color: white;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
-        .tab {
+        .auth-tab {
             flex: 1;
             padding: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: rgba(255, 255, 255, 0.6);
+            background: #0d1117;
+            border: 1px solid #1f2937;
             border-radius: 8px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: all 0.3s ease;
-        }
-
-        .tab.active {
-            background: rgba(0, 212, 255, 0.3);
-            color: white;
-        }
-
-        /* Form */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9em;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: white;
-            font-size: 1em;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #00d4ff;
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .form-group input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            width: auto;
-            cursor: pointer;
-        }
-
-        .checkbox-group label {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9em;
-            cursor: pointer;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 1.1em;
+            color: #9ca3af;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
-        }
-
-        .modal-footer {
             text-align: center;
-            margin-top: 20px;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.9em;
         }
 
-        .modal-footer a {
-            color: #00d4ff;
-            text-decoration: none;
-            cursor: pointer;
-            transition: color 0.3s ease;
+        .auth-tab.active {
+            background: #1f2937;
+            color: #fff;
+            border-color: #374151;
         }
 
-        .modal-footer a:hover {
-            color: #00f2ff;
-            text-decoration: underline;
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        /* Sections */
-        .section {
-            margin-bottom: 3rem;
-        }
-
-        .section-header {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .disciplines-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-
-        .discipline-card {
-            background: rgba(20, 30, 60, 0.6);
-            border: 2px solid rgba(0, 212, 255, 0.3);
-            border-radius: 15px;
-            padding: 1rem;
-            text-align: center;
-            cursor: pointer;
+        .auth-input {
+            width: 100%;
+            padding: 15px;
+            background: #0d1117;
+            border: 1px solid #1f2937;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
             transition: all 0.3s ease;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: #374151;
+            background: #161b22;
+        }
+
+        .auth-input::placeholder {
+            color: #6b7280;
+        }
+
+        .auth-password-wrapper {
             position: relative;
-            overflow: hidden;
         }
 
-        .discipline-card::before {
-            content: '';
+        .auth-password-toggle {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, transparent 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
         }
 
-        .discipline-card:hover {
-            transform: translateY(-5px);
-            border-color: #00d4ff;
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        .auth-password-toggle:hover {
+            color: #fff;
         }
 
-        .discipline-card:hover::before {
-            opacity: 1;
+        .auth-forgot {
+            color: #9ca3af;
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            margin-top: -10px;
         }
 
-        .discipline-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
-            border-radius: 12px;
-            margin: 0 auto 1rem;
+        .auth-forgot:hover {
+            color: #fff;
+        }
+
+        .auth-social {
+            margin-top: 10px;
+        }
+
+        .auth-social-title {
+            color: #9ca3af;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .auth-social-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .auth-social-btn {
+            aspect-ratio: 1;
+            background: #0d1117;
+            border: 1px solid #1f2937;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .discipline-name {
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Tournaments Section */
-        .tournaments-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
-        }
-
-        .tournament-card {
-            background: rgba(20, 30, 60, 0.6);
-            border: 2px solid rgba(0, 212, 255, 0.3);
-            border-radius: 20px;
-            padding: 2rem;
+            cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            font-size: 24px;
+            color: #9ca3af;
         }
 
-        .tournament-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, transparent 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .tournament-card:hover {
-            border-color: #00d4ff;
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.3);
-        }
-
-        .tournament-card:hover::before {
-            opacity: 1;
-        }
-
-        .tournament-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 1.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .tournament-date {
-            background: rgba(0, 212, 255, 0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .tournament-format {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        .tournament-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .tournament-prize {
-            font-size: 2rem;
-            font-weight: 900;
-            color: #00d4ff;
-            margin-bottom: 1.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .tournament-btn {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
-            border: none;
-            border-radius: 12px;
+        .auth-social-btn:hover {
+            background: #1f2937;
+            border-color: #374151;
             color: #fff;
-            font-size: 1.1rem;
+        }
+
+        .auth-captcha {
+            background: #0d1117;
+            border: 1px solid #1f2937;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .auth-captcha-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .auth-captcha-text {
+            color: #fff;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .auth-captcha-info {
+            color: #6b7280;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .auth-submit {
+            width: 100%;
+            padding: 15px;
+            background: #fff;
+            color: #0d1117;
+            border: none;
+            border-radius: 8px;
             font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
+        }
+
+        .auth-submit:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+        }
+
+        .auth-register-btn {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            color: #fff;
+            border: 1px solid #1f2937;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .auth-register-btn:hover {
+            background: #1f2937;
+            border-color: #374151;
+        }
+
+        @media (max-width: 768px) {
+            .carousel {
+                height: 200px;
+            }
+        }
+
+        .carousel-arrow {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 40px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .carousel-arrow:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .carousel-arrow.left {
+            left: 20px;
+        }
+
+        .carousel-arrow.right {
+            right: 20px;
+        }
+
+        /* Disciplines */
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            color: #9ca3af;
+        }
+
+        .disciplines {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 60px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .discipline-card {
+            min-width: 100px;
+            width: 100px;
+            height: 140px;
+            background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
             position: relative;
-            z-index: 1;
+            border: 2px transparent solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .tournament-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.5);
+        .discipline-card:hover {
+            border-color: #3b82f6;
         }
 
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .tournaments-grid {
+        .discipline-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .discipline-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            padding: 4px;
+        }
+
+        .discipline-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Tournaments */
+        .tournaments {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .tournaments {
                 grid-template-columns: 1fr;
             }
         }
 
+        .tournament-card {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid #374151;
+        }
+
+        .tournament-card:hover {
+            border-color: #3b82f6;
+        }
+
+        .tournament-image {
+            width: 80px;
+            height: 80px;
+            background: #374151;
+            border-radius: 8px;
+        }
+
+        .tournament-info {
+            flex: 1;
+        }
+
+        .tournament-progress {
+            width: 100%;
+            height: 6px;
+            background: #374151;
+            border-radius: 3px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .tournament-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+            width: 60%;
+            border-radius: 3px;
+        }
+
+        .tournament-price {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .tournament-register {
+            padding: 8px 20px;
+            background: #fff;
+            color: #0d1117;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .tournament-register:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 80px;
+            padding-top: 40px;
+            border-top: 1px solid #1f2937;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
         @media (max-width: 768px) {
-            .mobile-toggle {
+            .footer {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .footer-links {
+                align-items: center !important;
+            }
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-logo-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .footer-logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .footer-brand {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .footer-copyright {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .footer-link {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #fff;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .burger-menu {
                 display: block;
             }
 
             .sidebar {
-                transform: translateX(100%);
+                transform: translateX(-100%);
+                width: 250px;
+                padding: 80px 20px 20px;
             }
 
             .sidebar.active {
                 transform: translateX(0);
             }
 
+            .mobile-overlay {
+                display: block;
+            }
+
+            .logo {
+                margin-bottom: 30px;
+            }
+
+            .nav-items {
+                width: 100%;
+                gap: 10px;
+            }
+
+            .nav-item {
+                flex-direction: row;
+                justify-content: flex-start;
+                width: 100%;
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .nav-icon {
+                width: 24px;
+                height: 24px;
+            }
+
+            .nav-label {
+                font-size: 14px;
+            }
+
+            .login-btn {
+                width: 100%;
+                padding: 15px;
+                font-size: 14px;
+            }
+
             .main-content {
-                margin-right: 0;
-                padding: 5rem 1rem 2rem;
+                margin-left: 0;
+                padding: 80px 20px 20px;
             }
 
-            .auth-btn {
-                right: 5rem;
+            .carousel {
+                height: 200px;
+                border-radius: 12px;
+                margin-bottom: 40px;
             }
 
-            .slider-container {
-                height: 350px;
+            .carousel-arrow {
+                padding: 10px;
+                font-size: 30px;
             }
 
-            .slide {
-                padding: 2rem;
+            .carousel-arrow.left {
+                left: 10px;
             }
 
-            .slide-content h2 {
-                font-size: 2rem;
+            .carousel-arrow.right {
+                right: 10px;
             }
 
-            .slide-content .prize {
-                font-size: 1.2rem;
+            .disciplines {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                margin-bottom: 40px;
             }
 
-            .slide-content p {
-                font-size: 1rem;
-            }
-
-            .disciplines-grid {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-                gap: 1rem;
-            }
-
-            .discipline-icon {
-                width: 60px;
-                height: 60px;
-            }
-
-            .tournaments-grid {
+            .tournaments {
                 grid-template-columns: 1fr;
+                gap: 15px;
+                margin-bottom: 40px;
             }
 
-            .tournament-card {
-                padding: 1.5rem;
+            .tournament-image {
+                height: 150px;
+            }
+
+            .footer {
+                flex-direction: column;
+                gap: 25px;
+                text-align: center;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
             }
         }
 
+        /* Small Mobile */
         @media (max-width: 480px) {
-            .slide-content h2 {
-                font-size: 1.5rem;
+            .main-content {
+                padding: 70px 15px 15px;
             }
 
-            .section-header {
-                font-size: 1.3rem;
+            .section-title {
+                font-size: 12px;
+                margin-bottom: 15px;
             }
 
-            .disciplines-grid {
-                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            .disciplines {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
             }
 
-            .discipline-icon {
-                width: 50px;
-                height: 50px;
-                font-size: 1.5rem;
+            .discipline-badge {
+                width: 30px;
+                height: 30px;
+                bottom: 8px;
+                right: 8px;
             }
 
-            .discipline-name {
-                font-size: 0.75rem;
+            .tournament-price {
+                font-size: 20px;
             }
 
-            .slider-container {
-                height: 300px;
+            .carousel {
+                height: 180px;
             }
 
-            .auth-btn {
-                padding: 10px 20px;
-                font-size: 0.9em;
+            .footer-brand {
+                font-size: 16px;
             }
-        }
 
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
+            .auth-modal-content {
+                padding: 30px 20px;
+                max-width: 95%;
+            }
 
-        ::-webkit-scrollbar-track {
-            background: rgba(10, 14, 39, 0.5);
-        }
+            .auth-modal-title {
+                font-size: 20px;
+            }
 
-        ::-webkit-scrollbar-thumb {
-            background: rgba(0, 212, 255, 0.5);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 212, 255, 0.8);
-        }
+            .auth-social-buttons {
+                grid-template-columns: repeat(4, 1fr);
+            }
     </style>
 </head>
 <body>
     <div class="container">
-        {% if user.is_authenticated %}
-        {% else %}
-            <button id="loginBtn" class="auth-btn">Войти</button>
-        {% endif %}
-        <!-- Mobile Toggle Button -->
-        <button class="mobile-toggle" onclick="toggleSidebar()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2">
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-        </button>
+        <!-- Burger Menu Button -->
+        <div class="burger-menu" id="burgerMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
 
-        <!-- Main Content -->
-        <main class="main-content" id="mainContent">
-            <!-- Hero Slider Section -->
-            <div class="slider-container">
-                <div class="slider-wrapper" id="sliderWrapper">
-                    <div class="slide">
-                        <div class="slide-content">
-                            <h2>STANDOFF 2</h2>
-                            <p class="prize">15000+ GOLD</p>
-                            <p>ПРИЗОВЫХ ПО БУДНЯМ В ТУРНИРАХ</p>
-                        </div>
-                    </div>
-                    <div class="slide">
-                        <div class="slide-content">
-                            <h2>PUBG MOBILE</h2>
-                            <p class="prize">25000+ РУБЛЕЙ</p>
-                            <p>ЕЖЕНЕДЕЛЬНЫЕ ТУРНИРЫ</p>
-                        </div>
-                    </div>
-                    <div class="slide">
-                        <div class="slide-content">
-                            <h2>CS:GO</h2>
-                            <p class="prize">50000+ РУБЛЕЙ</p>
-                            <p>ЕЖЕМЕСЯЧНЫЙ ГРАНД-ФИНАЛ</p>
-                        </div>
-                    </div>
-                    <div class="slide">
-                        <div class="slide-content">
-                            <h2>DOTA 2</h2>
-                            <p class="prize">100000+ РУБЛЕЙ</p>
-                            <p>МЕЖДУНАРОДНЫЙ ТУРНИР</p>
-                        </div>
-                    </div>
-                </div>
+        <!-- Mobile Overlay -->
+        <div class="mobile-overlay" id="mobileOverlay"></div>
 
-                <button class="arrow arrow-left" id="prevBtn">‹</button>
-                <button class="arrow arrow-right" id="nextBtn">›</button>
-
-                <div class="dots-container" id="dotsContainer"></div>
+        <!-- Authorization Modal -->
+        <div class="auth-modal" id="authModal">
+            <div class="auth-modal-content">
+                <button class="auth-modal-close" id="authModalClose">×</button>
+                <h2 class="auth-modal-title">Вход на CyberHero</h2>
                 
-                <div class="timer-bar" id="timerBar"></div>
-            </div>
-
-            <!-- Disciplines Section -->
-            <section class="section">
-                <h3 class="section-header">Доступные дисциплины:</h3>
-                <div class="disciplines-grid">
-                    <div class="discipline-card">
-                        <div class="discipline-icon">🔫</div>
-                        <div class="discipline-name">Standoff 2</div>
-                    </div>
-                    <div class="discipline-card">
-                        <div class="discipline-icon">🎮</div>
-                        <div class="discipline-name">PUBG</div>
-                    </div>
-                    <div class="discipline-card">
-                        <div class="discipline-icon">🎯</div>
-                        <div class="discipline-name">Dota 2</div>
-                    </div>
-                    <div class="discipline-card">
-                        <div class="discipline-icon">⚔️</div>
-                        <div class="discipline-name">Brawl Stars</div>
-                    </div>
-                    <div class="discipline-card">
-                        <div class="discipline-icon">🏃</div>
-                        <div class="discipline-name">Free Fire</div>
-                    </div>
-                    <div class="discipline-card">
-                        <div class="discipline-icon">🎪</div>
-                        <div class="discipline-name">Valorant</div>
-                    </div>
-                    <div class="discipline-card">
-                        <div class="discipline-icon">🏆</div>
-                        <div class="discipline-name">CS:GO</div>
-                    </div>
-                    <div class="discipline-card">
-                        <div class="discipline-icon">🎲</div>
-                        <div class="discipline-name">Apex</div>
-                    </div>
+                <div class="auth-tabs">
+                    <div class="auth-tab active" data-tab="login">Логин</div>
+                    <div class="auth-tab" data-tab="phone">Номер телефона</div>
                 </div>
-            </section>
 
-            <!-- Tournaments Section -->
-            <section class="section">
-                <h3 class="section-header">Турниры</h3>
-                <div class="tournaments-grid">
-                    <div class="tournament-card">
-                        <div class="tournament-header">
-                            <div class="tournament-date">30.01.2028 22:00</div>
-                            <div class="tournament-format">1vs1</div>
+                <form class="auth-form" id="authForm">
+                    <input type="text" class="auth-input" placeholder="Логин" required>
+                    
+                    <div class="auth-password-wrapper">
+                        <input type="password" class="auth-input" id="authPassword" placeholder="Пароль" required>
+                        <button type="button" class="auth-password-toggle" id="passwordToggle">👁</button>
+                    </div>
+
+                    <a href="#" class="auth-forgot">ВОССТАНОВИТЬ ПАРОЛЬ</a>
+
+                    <div class="auth-social">
+                        <div class="auth-social-title">Войти другим способом</div>
+                        <div class="auth-social-buttons">
+                            <div class="auth-social-btn" title="Telegram">📱</div>
+                            <div class="auth-social-btn" title="Google">G</div>
+                            <div class="auth-social-btn" title="VK">ВК</div>
+                            <div class="auth-social-btn" title="Discord">💬</div>
                         </div>
-                        <h4 class="tournament-title">STANDOFF 2 SOLO FAST CUP #1633</h4>
-                        <div class="tournament-prize">4 400 🥇</div>
-                        <button class="tournament-btn">Регистрация</button>
                     </div>
 
-                    <div class="tournament-card">
-                        <div class="tournament-header">
-                            <div class="tournament-date">28.01.2028 12:00</div>
-                            <div class="tournament-format">1vs1</div>
+                    <div class="auth-captcha">
+                        <input type="checkbox" class="auth-captcha-checkbox" id="captcha" required>
+                        <div>
+                            <label for="captcha" class="auth-captcha-text">Я не робот</label>
+                            <div class="auth-captcha-info">SmartCaptcha by Yandex Cloud</div>
                         </div>
-                        <h4 class="tournament-title">STANDOFF 2 FREE #217</h4>
-                        <div class="tournament-prize">1 700 ⭐<br><span style="font-size: 1.2rem;">+ 6 000 ₽</span></div>
-                        <button class="tournament-btn">Регистрация</button>
                     </div>
-                </div>
-            </section>
-        </main>
 
-        <!-- Right Sidebar Navigation -->
-        <nav class="sidebar">
-            <div class="logo">
-                <h1>CH</h1>
-            </div>
-
-            <div class="nav-item">
-                <a href="/" style="display: flex; flex-direction: column; align-items: center; gap: 0.4rem; text-decoration: none; color: inherit; width: 100%;">
-                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                    <span>Главная</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="/tournaments/" style="display: flex; flex-direction: column; align-items: center; gap: 0.4rem; text-decoration: none; color: inherit; width: 100%;">
-                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                    <span>Турниры</span>
-                </a>
-            </div>
-
-            <div class="nav-item">
-                <a href="/news/" style="display: flex; flex-direction: column; align-items: center; gap: 0.4rem; text-decoration: none; color: inherit; width: 100%;">
-                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54h2.75v4h2v-4h2.75l-2.75-3.54z"/></svg>
-                    <span>Новости</span>
-                </a>
-            </div>
-
-            <!-- User Profile Section at Bottom -->
-            <div class="user-info" style="margin-top: auto; padding: 1rem 0.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-                {% if user.is_authenticated %}
-                    <!-- User Profile Card -->
-                    <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 10px; padding: 1rem; text-align: center;">
-                        <div class="user-avatar" style="width: 50px; height: 50px; margin: 0 auto 0.5rem; background: linear-gradient(135deg, #00d4ff, #0099ff); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; color: white;">
-                            {{ user.username|first|upper }}
-                        </div>
-                        <div class="user-name" style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.3rem;">
-                            {{ user.username }}
-                        </div>
-                        <button id="logoutBtn" onclick="logout()" style="width: 100%; padding: 0.5rem; background: rgba(255, 69, 0, 0.2); border: 1px solid #ff4500; color: #ff4500; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s ease; font-weight: 600;">
-                            Выход
-                        </button>
-                    </div>
-                {% else %}
-                {% endif %}
-            </div>
-        </nav>
-    </div>
-
-    <!-- Login Modal -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <button class="close-btn" id="closeBtn">&times;</button>
-            <div class="modal-header">
-                <h2>ВХОД</h2>
-            </div>
-            
-            <div class="tabs">
-                <button class="tab active" data-tab="login">Логин</button>
-                <button class="tab" data-tab="phone">Телефон</button>
-            </div>
-
-            <form id="authForm">
-                <div class="form-group">
-                    <label for="loginInput">Логин или Email</label>
-                    <input type="text" id="loginInput" placeholder="Логин" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="passwordInput">Пароль</label>
-                    <input type="password" id="passwordInput" placeholder="Введите пароль" required>
-                </div>
-
-                <div class="checkbox-group">
-                    <input type="checkbox" id="rememberMe">
-                    <label for="rememberMe">Запомнить меня</label>
-                </div>
-
-                <button type="submit" class="submit-btn">ВОЙТИ</button>
-            </form>
-
-            <div class="modal-footer">
-                Нет аккаунта? <a id="registerBtn">Зарегистрироваться</a>
+                    <button type="submit" class="auth-submit">Войти</button>
+                    <button type="button" class="auth-register-btn">Регистрация</button>
+                </form>
             </div>
         </div>
-    </div>
-
-    <!-- Registration Modal -->
-    <div class="modal-overlay" id="registerOverlay">
-        <div class="modal">
-            <button class="close-btn" id="closeRegisterBtn">&times;</button>
-            <div class="modal-header">
-                <h2>РЕГИСТРАЦИЯ</h2>
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                <img src="img\thunder.png" alt="ThunderCup Logo">
             </div>
             
-            <div class="tabs">
-                <button class="tab active" data-tab="email">Email</button>
-                <button class="tab" data-tab="phone">Телефон</button>
-            </div>
-
-            <form id="registerForm">
-                <div class="form-group">
-                    <label for="regLoginInput">Логин</label>
-                    <input type="text" id="regLoginInput" placeholder="Придумайте логин" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="regEmailInput">Email</label>
-                    <input type="email" id="regEmailInput" placeholder="Email" required>
+            <div class="nav-items">
+                <div class="nav-item active">
+                    <div class="nav-icon">
+                        <img src="img\home_icon.png" alt="Home">
+                    </div>
+                    <div class="nav-label">Главная</div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="regPasswordInput">Пароль</label>
-                    <input type="password" id="regPasswordInput" placeholder="Придумайте пароль" required>
+                <div class="nav-item">
+                    <div class="nav-icon">
+                        <img src="img\tournaments_icon.png" alt="Tournaments">
+                    </div>
+                    <div class="nav-label">Турниры</div>
+                </div>
+                
+                <div class="nav-item">
+                    <div class="nav-icon">
+                        <img src="img\news_icon.png" alt="News">
+                    </div>
+                    <div class="nav-label">Новости</div>
+                </div>
+            </div>
+
+            <button class="login-btn">ВОЙТИ</button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="content-wrapper">
+            <!-- Carousel -->
+            <div class="carousel">
+                <div class="carousel-slides">
+                    <div class="carousel-slide active">
+                        <img src="img/dota-banner.webp" alt="Slide 1">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="img/cs2-banner.png" alt="Slide 2">
+                    </div>
+                    <div class="carousel-slide">
+                        <img src="img/valo--banner.png" alt="Slide 3">
+                    </div>
+                </div>
+                <button class="carousel-arrow left">‹</button>
+                <button class="carousel-arrow right">›</button>
+                <div class="carousel-indicators">
+                    <div class="carousel-indicator active" data-slide="0"></div>
+                    <div class="carousel-indicator" data-slide="1"></div>
+                    <div class="carousel-indicator" data-slide="2"></div>
+                </div>
+            </div>
+
+            <!-- Disciplines -->
+            <h2 class="section-title">Выберите дисциплину:</h2>
+            <div class="disciplines">
+                <div class="discipline-card">
+                    <img src="img\game-csgo.png" alt="CS:GO">
+                    <div class="discipline-badge">
+                        <img src="img\logo-csgo.png" alt="CS:GO Logo">
+                    </div>
+                </div>
+                <div class="discipline-card">
+                    <img src="img\game-juggernaut.png" alt="Dota 2">
+                    <div class="discipline-badge">
+                        <img src="img\logo-dota2.png" alt="Dota 2 Logo">
+                    </div>
+                </div>
+                <div class="discipline-card">
+                    <img src="img\game-phantom.png" alt="Valorant">
+                    <div class="discipline-badge">
+                        <img src="img\logo-valorant.png" alt="Valorant Logo">
+                    </div>
+                </div>
+                <div class="discipline-card">
+                    <img src="img\game-pubg.png" alt="PUBG">
+                    <div class="discipline-badge">
+                        <img src="img\logo-pubg.png" alt="PUBG Logo">
+                    </div>
+                </div>
+                <div class="discipline-card">
+                    <img src="img\game-clash.png" alt="Clash Royale">
+                    <div class="discipline-badge">
+                        <img src="img\logo-clash.png" alt="Clash Royale Logo">
+                    </div>
+                </div>
+                <div class="discipline-card">
+                    <img src="img\game-brawl.png" alt="Brawl Stars">
+                    <div class="discipline-badge">
+                        <img src="img\logo-brawl.png" alt="Brawl Stars Logo">
+                    </div>
+                </div>
+                <div class="discipline-card">
+                    <img src="img\game-standoff.png" alt="Standoff 2">
+                    <div class="discipline-badge">
+                        <img src="img\logo-standoff.png" alt="Standoff 2 Logo">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tournaments -->
+            <h2 class="section-title">Турниры</h2>
+            <div class="tournaments">
+                <div class="tournament-card">
+                    <div class="tournament-image"></div>
+                    <div class="tournament-info">
+                        <div class="tournament-progress">
+                            <div class="tournament-progress-bar"></div>
+                        </div>
+                        <div class="tournament-price">1700 ₽</div>
+                        <button class="tournament-register">Регистрация</button>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="regConfirmPasswordInput">Подтвердите пароль</label>
-                    <input type="password" id="regConfirmPasswordInput" placeholder="Повторите пароль" required>
+                <div class="tournament-card">
+                    <div class="tournament-image"></div>
+                    <div class="tournament-info">
+                        <div class="tournament-progress">
+                            <div class="tournament-progress-bar"></div>
+                        </div>
+                        <div class="tournament-price">1700 ₽</div>
+                        <button class="tournament-register">Регистрация</button>
+                    </div>
                 </div>
 
-                <div class="checkbox-group">
-                    <input type="checkbox" id="agreeTerms" required>
-                    <label for="agreeTerms">Согласен с условиями использования</label>
+                <div class="tournament-card">
+                    <div class="tournament-image"></div>
+                    <div class="tournament-info">
+                        <div class="tournament-progress">
+                            <div class="tournament-progress-bar"></div>
+                        </div>
+                        <div class="tournament-price">1700 ₽</div>
+                        <button class="tournament-register">Регистрация</button>
+                    </div>
                 </div>
 
-                <button type="submit" class="submit-btn">ЗАРЕГИСТРИРОВАТЬСЯ</button>
-            </form>
+                <div class="tournament-card">
+                    <div class="tournament-image"></div>
+                    <div class="tournament-info">
+                        <div class="tournament-progress">
+                            <div class="tournament-progress-bar"></div>
+                        </div>
+                        <div class="tournament-price">1700 ₽</div>
+                        <button class="tournament-register">Регистрация</button>
+                    </div>
+                </div>
+            </div>
 
-            <div class="modal-footer">
-                Уже есть аккаунт? <a id="backToLoginBtn">Войти</a>
+            <!-- Footer -->
+            <div class="footer">
+                <div class="footer-logo">
+                    <div class="footer-logo-icon">
+                        <img src="img/thunder.png" alt="ThunderCup">
+                    </div>
+                    <div>
+                        <div class="footer-brand">ThunderCup</div>
+                        <div class="footer-copyright">Copyright © 2020-2025</div>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Главная</a>
+                    <a href="#" class="footer-link">Новости</a>
+                    <a href="#" class="footer-link">Турниры</a>
+                    <a href="#" class="footer-link">Помощь</a>
+                </div>
+            </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Slider functionality
-        const sliderWrapper = document.getElementById('sliderWrapper');
-        const dotsContainer = document.getElementById('dotsContainer');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const timerBar = document.getElementById('timerBar');
-        
-        const slides = document.querySelectorAll('.slide');
-        const totalSlides = slides.length;
-        let currentSlide = 0;
-        let autoSlideInterval;
-        let timerInterval;
-        const slideDelay = 5000;
-
-        function createDots() {
-            for (let i = 0; i < totalSlides; i++) {
-                const dot = document.createElement('div');
-                dot.classList.add('dot');
-                if (i === 0) dot.classList.add('active');
-                dot.addEventListener('click', () => goToSlide(i));
-                dotsContainer.appendChild(dot);
-            }
-        }
-
-        function updateDots() {
-            const dots = document.querySelectorAll('.dot');
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentSlide);
-            });
-        }
-
-        function goToSlide(index) {
-            currentSlide = index;
-            sliderWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
-            updateDots();
-            resetTimer();
-        }
-
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % totalSlides;
-            goToSlide(currentSlide);
-        }
-
-        function prevSlide() {
-            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-            goToSlide(currentSlide);
-        }
-
-        function animateTimer() {
-            let progress = 0;
-            const step = 100 / (slideDelay / 100);
-            
-            clearInterval(timerInterval);
-            timerBar.style.width = '0%';
-            
-            timerInterval = setInterval(() => {
-                progress += step;
-                timerBar.style.width = progress + '%';
-                
-                if (progress >= 100) {
-                    clearInterval(timerInterval);
-                }
-            }, 100);
-        }
-
-        function resetTimer() {
-            clearInterval(autoSlideInterval);
-            animateTimer();
-            autoSlideInterval = setInterval(nextSlide, slideDelay);
-        }
-
-        prevBtn.addEventListener('click', prevSlide);
-        nextBtn.addEventListener('click', nextSlide);
-
-        const sliderContainer = document.querySelector('.slider-container');
-        sliderContainer.addEventListener('mouseenter', () => {
-            clearInterval(autoSlideInterval);
-            clearInterval(timerInterval);
-        });
-
-        sliderContainer.addEventListener('mouseleave', () => {
-            resetTimer();
-        });
-
-        createDots();
-        resetTimer();
-
-        // Sidebar toggle
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
-        }
-
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.querySelector('.mobile-toggle');
-            
-            if (window.innerWidth <= 768) {
-                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
-                    sidebar.classList.remove('active');
-                }
-            }
-        });
-
-        window.addEventListener('resize', function() {
-            const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth > 768) {
-                sidebar.classList.remove('active');
-            }
-        });
-
-        // Modal functionality
-        const loginBtn = document.getElementById('loginBtn');
-        const modalOverlay = document.getElementById('modalOverlay');
-        const closeBtn = document.getElementById('closeBtn');
+        // Authorization Modal
+        const authModal = document.getElementById('authModal');
+        const authModalClose = document.getElementById('authModalClose');
+        const loginButtons = document.querySelectorAll('.login-btn');
         const authForm = document.getElementById('authForm');
-        const tabs = document.querySelectorAll('#modalOverlay .tab');
-        const loginInput = document.getElementById('loginInput');
+        const passwordToggle = document.getElementById('passwordToggle');
+        const authPassword = document.getElementById('authPassword');
+        const authTabs = document.querySelectorAll('.auth-tab');
 
-        const registerOverlay = document.getElementById('registerOverlay');
-        const closeRegisterBtn = document.getElementById('closeRegisterBtn');
-        const registerForm = document.getElementById('registerForm');
-        const registerBtn = document.getElementById('registerBtn');
-        const backToLoginBtn = document.getElementById('backToLoginBtn');
-        const regEmailInput = document.getElementById('regEmailInput');
-        const registerTabs = registerOverlay.querySelectorAll('.tab');
-
-        loginBtn.addEventListener('click', () => {
-            modalOverlay.classList.add('active');
+        // Open modal
+        loginButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                authModal.style.display = 'flex';
+                setTimeout(() => {
+                    authModal.classList.add('active');
+                }, 10);
+                document.body.style.overflow = 'hidden';
+            });
         });
 
-        closeBtn.addEventListener('click', () => {
-            modalOverlay.classList.remove('active');
-        });
+        // Close modal
+        function closeAuthModal() {
+            authModal.classList.remove('active');
+            setTimeout(() => {
+                authModal.style.display = 'none';
+            }, 300);
+            document.body.style.overflow = '';
+        }
 
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) {
-                modalOverlay.classList.remove('active');
+        authModalClose.addEventListener('click', closeAuthModal);
+        
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) {
+                closeAuthModal();
             }
         });
 
-        registerBtn.addEventListener('click', () => {
-            modalOverlay.classList.remove('active');
-            registerOverlay.classList.add('active');
-        });
-
-        closeRegisterBtn.addEventListener('click', () => {
-            registerOverlay.classList.remove('active');
-        });
-
-        registerOverlay.addEventListener('click', (e) => {
-            if (e.target === registerOverlay) {
-                registerOverlay.classList.remove('active');
+        // Password toggle
+        passwordToggle.addEventListener('click', () => {
+            if (authPassword.type === 'password') {
+                authPassword.type = 'text';
+                passwordToggle.textContent = '🔒';
+            } else {
+                authPassword.type = 'password';
+                passwordToggle.textContent = '👁';
             }
         });
 
-        backToLoginBtn.addEventListener('click', () => {
-            registerOverlay.classList.remove('active');
-            modalOverlay.classList.add('active');
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (modalOverlay.classList.contains('active')) {
-                    modalOverlay.classList.remove('active');
-                }
-                if (registerOverlay.classList.contains('active')) {
-                    registerOverlay.classList.remove('active');
-                }
-            }
-        });
-
-        tabs.forEach(tab => {
+        // Tab switching
+        authTabs.forEach(tab => {
             tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
+                authTabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-                
-                if (tab.dataset.tab === 'phone') {
-                    loginInput.placeholder = 'Номер телефона';
-                    loginInput.type = 'tel';
-                } else {
-                    loginInput.placeholder = 'Логин';
-                    loginInput.type = 'text';
-                }
             });
         });
 
-        registerTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                registerTabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                if (tab.dataset.tab === 'phone') {
-                    regEmailInput.placeholder = 'Номер телефона';
-                    regEmailInput.type = 'tel';
-                } else {
-                    regEmailInput.placeholder = 'Email';
-                    regEmailInput.type = 'email';
-                }
-            });
-        });
-
-        authForm.addEventListener('submit', async (e) => {
+        // Form submit
+        authForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const login = loginInput.value;
-            const password = document.getElementById('passwordInput').value;
-            
-            try {
-                const response = await fetch('/api/login/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: JSON.stringify({ login, password })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    alert('Вход выполнен!');
-                    location.reload();
-                } else {
-                    alert('Ошибка: ' + data.message);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Ошибка при входе');
-            }
-            
-            modalOverlay.classList.remove('active');
-            authForm.reset();
+            alert('Вход выполнен успешно!');
+            closeAuthModal();
         });
 
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const login = document.getElementById('regLoginInput').value;
-            const email = regEmailInput.value;
-            const password = document.getElementById('regPasswordInput').value;
-            const confirmPassword = document.getElementById('regConfirmPasswordInput').value;
-            const agreedToTerms = document.getElementById('agreeTerms').checked;
+        // Burger menu functionality
+        const burgerMenu = document.getElementById('burgerMenu');
+        const sidebar = document.getElementById('sidebar');
+        const mobileOverlay = document.getElementById('mobileOverlay');
 
-            if (password !== confirmPassword) {
-                alert('Пароли не совпадают!');
-                return;
-            }
-
-            if (!agreedToTerms) {
-                alert('Необходимо согласиться с условиями использования');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/register/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: JSON.stringify({ login, email, password })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    alert('Регистрация успешна!');
-                    location.reload();
-                } else {
-                    alert('Ошибка: ' + data.message);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Ошибка при регистрации');
-            }
-            
-            registerOverlay.classList.remove('active');
-            registerForm.reset();
-        });
-
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
+        function toggleMenu() {
+            burgerMenu.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            mobileOverlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
         }
 
-        // Logout
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', async () => {
-                if (confirm('Вы уверены, что хотите выйти?')) {
-                    try {
-                        const response = await fetch('/logout/', {
-                            method: 'GET'
-                        });
-                        if (response.ok) {
-                            window.location.href = '/';
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                    }
-                }
-            });
-        }
+        burgerMenu.addEventListener('click', toggleMenu);
+        mobileOverlay.addEventListener('click', toggleMenu);
 
-        // Close modals on overlay click
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) {
-                    overlay.classList.remove('active');
+        // Close menu on navigation item click (mobile)
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Close menu on mobile after selection
+                if (window.innerWidth <= 768) {
+                    toggleMenu();
                 }
             });
         });
 
-        function logout() {
-            if (confirm('Вы уверены, что хотите выйти?')) {
-                fetch('/logout/', {
-                    method: 'GET',
-                    headers: {
-                        'X-CSRFToken': getCookie('csrftoken')
-                    }
-                }).then(response => {
-                    if (response.ok) {
-                        window.location.href = '/';
-                    }
-                }).catch(error => {
-                    console.error('Error:', error);
-                    alert('Ошибка при выходе');
-                });
+        // Add interactivity
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Carousel functionality
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const indicators = document.querySelectorAll('.carousel-indicator');
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            // Wrap around
+            if (index >= totalSlides) {
+                currentSlide = 0;
+            } else if (index < 0) {
+                currentSlide = totalSlides - 1;
+            } else {
+                currentSlide = index;
             }
+
+            // Update slides
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                if (i === currentSlide) {
+                    slide.classList.add('active');
+                }
+            });
+
+            // Update indicators
+            indicators.forEach((indicator, i) => {
+                indicator.classList.remove('active');
+                if (i === currentSlide) {
+                    indicator.classList.add('active');
+                }
+            });
         }
+
+        // Arrow navigation
+        const leftArrow = document.querySelector('.carousel-arrow.left');
+        const rightArrow = document.querySelector('.carousel-arrow.right');
+        
+        leftArrow.addEventListener('click', () => {
+            showSlide(currentSlide - 1);
+        });
+        
+        rightArrow.addEventListener('click', () => {
+            showSlide(currentSlide + 1);
+        });
+
+        // Indicator navigation
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                showSlide(index);
+            });
+        });
+
+        // Auto-play (optional - uncomment to enable)
+        // setInterval(() => {
+        //     showSlide(currentSlide + 1);
+        // }, 5000);
     </script>
 </body>
 </html>
