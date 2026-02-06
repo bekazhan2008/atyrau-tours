@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberHero - Новости</title>
+    <title>ThunderCup - Новости</title>
     <style>
         * {
             margin: 0;
@@ -12,8 +12,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(180deg, #0a1628 0%, #1a2332 100%);
             color: #fff;
             min-height: 100vh;
         }
@@ -23,358 +23,379 @@
             min-height: 100vh;
         }
 
-        /* Right Sidebar Navigation */
-        .sidebar {
-            width: 100px;
-            background: rgba(15, 20, 40, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1.5rem 0;
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        /* Burger Menu Button */
+        .burger-menu {
+            display: none;
             position: fixed;
-            height: 100vh;
-            right: 0;
-            top: 0;
-            transition: transform 0.3s ease;
-            z-index: 1000;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: #0d1117;
+            border: 1px solid #1f2937;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .sidebar.hidden {
-            transform: translateX(100%);
+        .burger-menu:hover {
+            background: #1f2937;
+        }
+
+        .burger-menu span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .burger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .burger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .burger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Mobile Overlay */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            z-index: 99;
+            transition: background 0.3s ease;
+        }
+
+        .mobile-overlay.active {
+            display: block;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 90px;
+            background: #0d1117;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            border-right: 1px solid #1f2937;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 100;
+            transition: transform 0.3s ease;
         }
 
         .logo {
-            padding: 0 1rem;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        .logo h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 2px;
-        }
-
-        .nav-item {
-            padding: 1rem 0.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.4rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-right: 3px solid transparent;
-            margin: 0.2rem 0;
-        }
-
-        .nav-item:hover,
-        .nav-item.active {
-            background: rgba(0, 212, 255, 0.1);
-            border-right-color: #00d4ff;
-        }
-
-        .nav-item svg {
-            width: 28px;
-            height: 28px;
-            fill: #00d4ff;
-        }
-
-        .nav-item span {
-            font-size: 0.65rem;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 500;
-        }
-
-        .user-info {
-            padding: 1rem 0.5rem;
-            margin-top: auto;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            width: 50px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
+            margin-bottom: 40px;
+            cursor: pointer;
         }
 
-        .user-name {
-            font-size: 0.6rem;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.6);
-            word-break: break-word;
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
-        /* Mobile Toggle */
-        .mobile-toggle {
-            display: none;
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 1001;
-            background: rgba(0, 212, 255, 0.2);
-            border: 1px solid #00d4ff;
-            padding: 0.75rem;
-            border-radius: 8px;
+        .nav-items {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
+            padding: 10px;
+            border-radius: 8px;
         }
 
-        .mobile-toggle:hover {
-            background: rgba(0, 212, 255, 0.3);
+        .nav-item:hover {
+            background: #1f2937;
+        }
+
+        .nav-item.active {
+            background: #1f2937;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .nav-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .nav-item.active .nav-label {
+            color: #fff;
+        }
+
+        .login-btn {
+            margin-top: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #fff;
+            color: #0d1117;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: calc(100% - 20px);
+        }
+
+        .login-btn:hover {
+            background: #e5e7eb;
+            transform: translateY(-2px);
         }
 
         /* Main Content */
         .main-content {
             flex: 1;
-            margin-right: 100px;
-            padding: 2rem;
-            transition: margin-right 0.3s ease;
+            padding: 40px 60px;
+            margin-left: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .main-content.expanded {
-            margin-right: 0;
+        .content-wrapper {
+            width: 100%;
+            max-width: 1200px;
         }
 
         /* Page Header */
         .page-header {
-            margin-bottom: 3rem;
+            margin-bottom: 30px;
         }
 
         .page-title {
-            font-size: 3rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
             letter-spacing: 2px;
         }
 
         .page-subtitle {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 1.1rem;
+            color: #9ca3af;
+            font-size: 14px;
         }
 
-        /* News Filters */
-        .news-filters {
+        /* Filter Tabs */
+        .filter-tabs {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            gap: 10px;
+            margin-bottom: 30px;
             flex-wrap: wrap;
         }
 
-        .filter-btn {
-            padding: 0.75rem 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            color: rgba(255, 255, 255, 0.7);
+        .filter-tab {
+            padding: 10px 20px;
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            color: #9ca3af;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
-            font-weight: 500;
         }
 
-        .filter-btn:hover,
-        .filter-btn.active {
-            background: rgba(0, 212, 255, 0.2);
-            border-color: #00d4ff;
-            color: #00d4ff;
+        .filter-tab.active {
+            background: #06b6d4;
+            border-color: #06b6d4;
+            color: #fff;
+        }
+
+        .filter-tab:hover:not(.active) {
+            background: #374151;
+            color: #fff;
         }
 
         /* Featured News */
         .featured-news {
-            margin-bottom: 3rem;
+            background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        .featured-card {
-            position: relative;
-            height: 500px;
-            border-radius: 20px;
-            overflow: hidden;
-            background: linear-gradient(135deg, rgba(0, 50, 100, 0.8) 0%, rgba(0, 20, 50, 0.9) 100%),
-                        linear-gradient(90deg, #001030 0%, #003060 100%);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .featured-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .featured-content {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 3rem;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
-        }
-
-        .news-badge {
+        .featured-badge {
             display: inline-block;
-            padding: 0.5rem 1rem;
-            background: rgba(0, 212, 255, 0.2);
-            border: 1px solid #00d4ff;
-            border-radius: 20px;
-            color: #00d4ff;
-            font-size: 0.75rem;
-            font-weight: 600;
+            background: #06b6d4;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
             text-transform: uppercase;
-            margin-bottom: 1rem;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+            width: fit-content;
         }
 
         .featured-title {
-            font-size: 2.5rem;
-            font-weight: 900;
-            margin-bottom: 1rem;
-            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.3;
+            max-width: 600px;
         }
 
-        .featured-excerpt {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 1rem;
+        .featured-description {
+            color: #9ca3af;
+            font-size: 16px;
             line-height: 1.6;
-        }
-
-        .news-meta {
-            display: flex;
-            gap: 2rem;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .news-meta span {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            max-width: 700px;
         }
 
         /* News Grid */
         .news-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
         }
 
+        /* News Card */
         .news-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
+            background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+            border-radius: 16px;
             overflow: hidden;
-            transition: all 0.3s ease;
             cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
             display: flex;
             flex-direction: column;
         }
 
         .news-card:hover {
             transform: translateY(-5px);
-            border-color: #00d4ff;
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+            border-color: #3b82f6;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
         }
 
         .news-image {
             width: 100%;
-            height: 200px;
-            background: linear-gradient(135deg, rgba(0, 100, 100, 0.8) 0%, rgba(0, 50, 50, 0.9) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
+            height: 140px;
+            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
             position: relative;
+            overflow: hidden;
         }
 
-        .news-image::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 50%;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, transparent 100%);
+        .news-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .news-card-content {
-            padding: 1.5rem;
+        .news-content {
+            padding: 20px;
             flex: 1;
             display: flex;
             flex-direction: column;
         }
 
-        .news-card-title {
-            font-size: 1.3rem;
+        .news-category {
+            display: inline-block;
+            background: #06b6d4;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
             font-weight: 700;
-            margin-bottom: 0.75rem;
-            color: #fff;
-            line-height: 1.4;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            width: fit-content;
         }
 
-        .news-card-excerpt {
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.6);
-            line-height: 1.6;
-            margin-bottom: 1rem;
+        .news-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            color: #fff;
+        }
+
+        .news-description {
+            color: #9ca3af;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 15px;
             flex: 1;
         }
 
-        .news-card-meta {
+        .news-footer {
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.5);
+            padding-top: 15px;
+            border-top: 1px solid #374151;
         }
 
-        .read-more {
-            color: #00d4ff;
+        .news-read-more {
+            color: #fff;
+            font-size: 12px;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: gap 0.3s ease;
+            text-decoration: none;
+            transition: color 0.3s ease;
         }
 
-        .news-card:hover .read-more {
-            gap: 0.75rem;
+        .news-read-more:hover {
+            color: #06b6d4;
         }
 
         /* Load More Button */
-        .load-more {
-            text-align: center;
-            margin: 3rem 0;
+        .load-more-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 60px;
         }
 
         .load-more-btn {
-            padding: 1rem 3rem;
-            background: rgba(0, 212, 255, 0.1);
-            border: 2px solid #00d4ff;
-            border-radius: 12px;
-            color: #00d4ff;
-            font-size: 1rem;
+            padding: 15px 40px;
+            background: #06b6d4;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
             font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
@@ -382,349 +403,793 @@
         }
 
         .load-more-btn:hover {
-            background: #00d4ff;
-            color: #0a0e27;
+            background: #0891b2;
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+            box-shadow: 0 5px 15px rgba(6, 182, 212, 0.4);
         }
 
-        /* Responsive */
+        /* Authorization Modal */
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .auth-modal.active {
+            display: flex;
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .auth-modal-content {
+            background: #1a1f2e;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 480px;
+            position: relative;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transform: scale(0.7);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .auth-modal.active .auth-modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .auth-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 28px;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease;
+            line-height: 1;
+        }
+
+        .auth-modal-close:hover {
+            color: #fff;
+        }
+
+        .auth-modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            background: #0d1117;
+            border: 1px solid #1f2937;
+            border-radius: 8px;
+            color: #9ca3af;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .auth-tab.active {
+            background: #1f2937;
+            color: #fff;
+            border-color: #374151;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 15px;
+            background: #0d1117;
+            border: 1px solid #1f2937;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: #374151;
+            background: #161b22;
+        }
+
+        .auth-input::placeholder {
+            color: #6b7280;
+        }
+
+        .auth-password-wrapper {
+            position: relative;
+        }
+
+        .auth-password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+        }
+
+        .auth-password-toggle:hover {
+            color: #fff;
+        }
+
+        .auth-forgot {
+            color: #9ca3af;
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            margin-top: -10px;
+        }
+
+        .auth-forgot:hover {
+            color: #fff;
+        }
+
+        .auth-social {
+            margin-top: 10px;
+        }
+
+        .auth-social-title {
+            color: #9ca3af;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .auth-social-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .auth-social-btn {
+            aspect-ratio: 1;
+            background: #0d1117;
+            border: 1px solid #1f2937;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 24px;
+            color: #9ca3af;
+        }
+
+        .auth-social-btn:hover {
+            background: #1f2937;
+            border-color: #374151;
+            color: #fff;
+        }
+
+        .auth-captcha {
+            background: #0d1117;
+            border: 1px solid #1f2937;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .auth-captcha-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .auth-captcha-text {
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .auth-captcha-info {
+            color: #6b7280;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .auth-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .auth-submit:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .auth-register-btn {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            color: #fff;
+            border: 1px solid #1f2937;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .auth-register-btn:hover {
+            background: #1f2937;
+            border-color: #374151;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: auto;
+            padding-top: 40px;
+            border-top: 1px solid #1f2937;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-logo-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .footer-logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .footer-brand {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .footer-copyright {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .footer-link {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #fff;
+        }
+
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            .mobile-toggle {
+            .burger-menu {
                 display: block;
             }
 
             .sidebar {
-                transform: translateX(100%);
+                transform: translateX(-100%);
+                width: 250px;
+                padding: 80px 20px 20px;
             }
 
             .sidebar.active {
                 transform: translateX(0);
             }
 
+            .mobile-overlay {
+                display: block;
+            }
+
+            .logo {
+                margin-bottom: 30px;
+            }
+
+            .nav-items {
+                width: 100%;
+                gap: 10px;
+            }
+
+            .nav-item {
+                flex-direction: row;
+                justify-content: flex-start;
+                width: 100%;
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .nav-icon {
+                width: 24px;
+                height: 24px;
+            }
+
+            .nav-label {
+                font-size: 14px;
+            }
+
+            .login-btn {
+                width: 100%;
+                padding: 15px;
+                font-size: 14px;
+            }
+
             .main-content {
-                margin-right: 0;
-                padding: 1rem;
+                margin-left: 0;
+                padding: 80px 20px 20px;
             }
 
             .page-title {
-                font-size: 2rem;
+                font-size: 24px;
             }
 
-            .featured-card {
-                height: 400px;
-            }
-
-            .featured-content {
-                padding: 2rem;
+            .featured-news {
+                padding: 20px;
+                min-height: 200px;
             }
 
             .featured-title {
-                font-size: 1.75rem;
+                font-size: 20px;
             }
 
             .news-grid {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
+                gap: 20px;
             }
 
-            .news-filters {
-                overflow-x: auto;
-                flex-wrap: nowrap;
-                padding-bottom: 0.5rem;
+            .footer {
+                flex-direction: column;
+                gap: 25px;
+                text-align: center;
             }
 
-            .filter-btn {
-                white-space: nowrap;
+            .footer-links {
+                align-items: center;
+                gap: 15px;
             }
         }
 
+        /* Tablet */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .news-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Small Mobile */
         @media (max-width: 480px) {
+            .main-content {
+                padding: 70px 15px 15px;
+            }
+
             .page-title {
-                font-size: 1.5rem;
+                font-size: 20px;
             }
 
             .featured-title {
-                font-size: 1.5rem;
+                font-size: 18px;
             }
 
-            .featured-excerpt {
-                font-size: 1rem;
+            .featured-description {
+                font-size: 14px;
             }
 
-            .news-meta {
-                flex-direction: column;
-                gap: 0.5rem;
+            .auth-modal-content {
+                padding: 30px 20px;
+                max-width: 95%;
+            }
+
+            .auth-modal-title {
+                font-size: 20px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Mobile Toggle -->
-        <div class="mobile-toggle" onclick="toggleSidebar()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2">
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
+        <!-- Burger Menu Button -->
+        <div class="burger-menu" id="burgerMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Mobile Overlay -->
+        <div class="mobile-overlay" id="mobileOverlay"></div>
+
+        <!-- Authorization Modal -->
+        <div class="auth-modal" id="authModal">
+            <div class="auth-modal-content">
+                <button class="auth-modal-close" id="authModalClose">×</button>
+                <h2 class="auth-modal-title">Вход на ThunderCup</h2>
+                
+                <div class="auth-tabs">
+                    <div class="auth-tab active" data-tab="login">Логин</div>
+                    <div class="auth-tab" data-tab="phone">Номер телефона</div>
+                </div>
+
+                <form class="auth-form" id="authForm">
+                    <input type="text" class="auth-input" placeholder="Логин" required>
+                    
+                    <div class="auth-password-wrapper">
+                        <input type="password" class="auth-input" id="authPassword" placeholder="Пароль" required>
+                        <button type="button" class="auth-password-toggle" id="passwordToggle">👁</button>
+                    </div>
+
+                    <a href="#" class="auth-forgot">ВОССТАНОВИТЬ ПАРОЛЬ</a>
+
+                    <div class="auth-social">
+                        <div class="auth-social-title">Войти другим способом</div>
+                        <div class="auth-social-buttons">
+                            <div class="auth-social-btn" title="Telegram">📱</div>
+                            <div class="auth-social-btn" title="Google">G</div>
+                            <div class="auth-social-btn" title="VK">ВК</div>
+                            <div class="auth-social-btn" title="Discord">💬</div>
+                        </div>
+                    </div>
+
+                    <div class="auth-captcha">
+                        <input type="checkbox" class="auth-captcha-checkbox" id="captcha" required>
+                        <div>
+                            <label for="captcha" class="auth-captcha-text">Я не робот</label>
+                            <div class="auth-captcha-info">SmartCaptcha by Yandex Cloud</div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="auth-submit">Войти</button>
+                    <button type="button" class="auth-register-btn">Регистрация</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                <img src="img/thunder.png" alt="ThunderCup Logo">
+            </div>
+            
+            <div class="nav-items">
+                <div class="nav-item">
+                    <div class="nav-icon">
+                        <img src="img/home_icon.png" alt="Home">
+                    </div>
+                    <div class="nav-label">Главная</div>
+                </div>
+                
+                <div class="nav-item">
+                    <div class="nav-icon">
+                        <img src="img/tournaments_icon.png" alt="Tournaments">
+                    </div>
+                    <div class="nav-label">Турниры</div>
+                </div>
+                
+                <div class="nav-item active">
+                    <div class="nav-icon">
+                        <img src="img/news_icon.png" alt="News">
+                    </div>
+                    <div class="nav-label">Новости</div>
+                </div>
+            </div>
+
+            <button class="login-btn">ВОЙТИ</button>
         </div>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <!-- Page Header -->
-            <div class="page-header">
-                <h1 class="page-title">НОВОСТИ</h1>
-                <p class="page-subtitle">Последние обновления из мира киберспорта</p>
-            </div>
-
-            <!-- News Filters -->
-            <div class="news-filters">
-                <button class="filter-btn active">Все новости</button>
-                <button class="filter-btn">Турниры</button>
-                <button class="filter-btn">Обновления</button>
-                <button class="filter-btn">Команды</button>
-                <button class="filter-btn">Патчи</button>
-                <button class="filter-btn">Интервью</button>
-            </div>
-
-            <!-- Featured News -->
-            <div class="featured-news">
-                <div class="featured-card">
-                    <div class="featured-content">
-                        <span class="news-badge">🔥 Горячее</span>
-                        <h2 class="featured-title">Финал CyberHero Championship 2026: Эпическое противостояние</h2>
-                        <p class="featured-excerpt">
-                            Грандиозный финал международного турнира собрал более 2 миллионов зрителей онлайн. 
-                            Team Phoenix и Dark Warriors сразились за призовой фонд в 500,000$. Матч длился 
-                            рекордные 87 минут и завершился невероятным камбэком.
-                        </p>
-                        <div class="news-meta">
-                            <span>📅 31 Января 2026</span>
-                            <span>👁 2.3М просмотров</span>
-                            <span>💬 1.2К комментариев</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- News Grid -->
-            <div class="news-grid">
-                <!-- News Card 1 -->
-                <div class="news-card">
-                    <div class="news-image" style="background: linear-gradient(135deg, rgba(100, 0, 50, 0.8) 0%, rgba(50, 0, 20, 0.9) 100%);">
-                        🏆
-                    </div>
-                    <div class="news-card-content">
-                        <span class="news-badge">Турниры</span>
-                        <h3 class="news-card-title">Анонсирован новый сезон CyberLeague</h3>
-                        <p class="news-card-excerpt">
-                            Организаторы объявили о старте четвёртого сезона CyberLeague с увеличенным 
-                            призовым фондом и новым форматом проведения. Регистрация команд открыта.
-                        </p>
-                        <div class="news-card-meta">
-                            <span>30 Января 2026</span>
-                            <span class="read-more">Читать далее →</span>
-                        </div>
-                    </div>
+        <div class="main-content">
+            <div class="content-wrapper">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1 class="page-title">Новости</h1>
+                    <p class="page-subtitle">Последние обновления в мире киберспорта</p>
                 </div>
 
-                <!-- News Card 2 -->
-                <div class="news-card">
-                    <div class="news-image" style="background: linear-gradient(135deg, rgba(0, 100, 100, 0.8) 0%, rgba(0, 50, 50, 0.9) 100%);">
-                        ⚡
-                    </div>
-                    <div class="news-card-content">
-                        <span class="news-badge">Обновления</span>
-                        <h3 class="news-card-title">Патч 3.5: Масштабное обновление баланса</h3>
-                        <p class="news-card-excerpt">
-                            Разработчики выпустили крупное обновление, которое серьёзно изменит мету. 
-                            Усилены 12 героев, ослаблены 8, добавлены новые предметы и механики.
-                        </p>
-                        <div class="news-card-meta">
-                            <span>29 Января 2026</span>
-                            <span class="read-more">Читать далее →</span>
-                        </div>
-                    </div>
+                <!-- Filter Tabs -->
+                <div class="filter-tabs">
+                    <div class="filter-tab active">Все новости</div>
+                    <div class="filter-tab">Турниры</div>
+                    <div class="filter-tab">Команды</div>
+                    <div class="filter-tab">Обновления</div>
+                    <div class="filter-tab">Патчи</div>
                 </div>
 
-                <!-- News Card 3 -->
-                <div class="news-card">
-                    <div class="news-image" style="background: linear-gradient(135deg, rgba(50, 100, 0, 0.8) 0%, rgba(20, 50, 0, 0.9) 100%);">
-                        👥
+                <!-- Featured News -->
+                <div class="featured-news">
+                    <div>
+                        <div class="featured-badge">Главная новость</div>
+                        <h2 class="featured-title">Стартовал новый сезон ThunderCup Championship 2025</h2>
                     </div>
-                    <div class="news-card-content">
-                        <span class="news-badge">Команды</span>
-                        <h3 class="news-card-title">Team Phoenix объявила о новом составе</h3>
-                        <p class="news-card-excerpt">
-                            Действующие чемпионы провели перестановки в составе. Капитан команды дал 
-                            эксклюзивное интервью о планах на предстоящий сезон.
-                        </p>
-                        <div class="news-card-meta">
-                            <span>28 Января 2026</span>
-                            <span class="read-more">Читать далее →</span>
-                        </div>
-                    </div>
+                    <p class="featured-description">
+                        Приглашаем всех участников на грандиозный турнир по Dota 2 с призовым фондом 500,000 рублей. 
+                        Регистрация команд открыта до 15 марта. Не упустите свой шанс стать чемпионом!
+                    </p>
                 </div>
 
-                <!-- News Card 4 -->
-                <div class="news-card">
-                    <div class="news-image" style="background: linear-gradient(135deg, rgba(0, 50, 100, 0.8) 0%, rgba(0, 20, 50, 0.9) 100%);">
-                        🎮
-                    </div>
-                    <div class="news-card-content">
-                        <span class="news-badge">События</span>
-                        <h3 class="news-card-title">CyberFest 2026: Программа мероприятия</h3>
-                        <p class="news-card-excerpt">
-                            Опубликована полная программа крупнейшего киберспортивного фестиваля года. 
-                            Ожидается участие более 50 команд со всего мира.
-                        </p>
-                        <div class="news-card-meta">
-                            <span>27 Января 2026</span>
-                            <span class="read-more">Читать далее →</span>
+                <!-- News Grid -->
+                <div class="news-grid">
+                    <div class="news-card">
+                        <div class="news-image"></div>
+                        <div class="news-content">
+                            <div class="news-category">Турниры</div>
+                            <h3 class="news-title">Финал CS:GO Tournament завершился победой Team Spirit</h3>
+                            <p class="news-description">
+                                В напряженной борьбе Team Spirit одержала победу над NAVI со счетом 2:1. 
+                                Лучшим игроком турнира признан donk.
+                            </p>
+                            <div class="news-footer">
+                                <a href="#" class="news-read-more">Читать далее</a>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- News Card 5 -->
-                <div class="news-card">
-                    <div class="news-image" style="background: linear-gradient(135deg, rgba(100, 50, 0, 0.8) 0%, rgba(50, 20, 0, 0.9) 100%);">
-                        🎤
+                    <div class="news-card">
+                        <div class="news-image"></div>
+                        <div class="news-content">
+                            <div class="news-category">Обновления</div>
+                            <h3 class="news-title">Новый патч 7.35 для Dota 2: все изменения</h3>
+                            <p class="news-description">
+                                Valve выпустила масштабное обновление баланса, которое изменит мету перед 
+                                международным турниром.
+                            </p>
+                            <div class="news-footer">
+                                <a href="#" class="news-read-more">Читать далее</a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="news-card-content">
-                        <span class="news-badge">Интервью</span>
-                        <h3 class="news-card-title">Интервью с легендой: 10 лет в киберспорте</h3>
-                        <p class="news-card-excerpt">
-                            Ветеран киберспорта поделился воспоминаниями о становлении индустрии, 
-                            самых запоминающихся матчах и дал советы начинающим игрокам.
-                        </p>
-                        <div class="news-card-meta">
-                            <span>26 Января 2026</span>
-                            <span class="read-more">Читать далее →</span>
+
+                    <div class="news-card">
+                        <div class="news-image"></div>
+                        <div class="news-content">
+                            <div class="news-category">Команды</div>
+                            <h3 class="news-title">OG объявила новый состав на сезон 2025</h3>
+                            <p class="news-description">
+                                Легендарная организация OG представила обновленный состав с тремя новыми 
+                                игроками из СНГ региона.
+                            </p>
+                            <div class="news-footer">
+                                <a href="#" class="news-read-more">Читать далее</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="news-card">
+                        <div class="news-image"></div>
+                        <div class="news-content">
+                            <div class="news-category">Турниры</div>
+                            <h3 class="news-title">Открыта регистрация на PUBG Mobile Championship</h3>
+                            <p class="news-description">
+                                Призовой фонд турнира составляет 200,000 рублей. Регистрация команд 
+                                продлится до конца месяца.
+                            </p>
+                            <div class="news-footer">
+                                <a href="#" class="news-read-more">Читать далее</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="news-card">
+                        <div class="news-image"></div>
+                        <div class="news-content">
+                            <div class="news-category">Патчи</div>
+                            <h3 class="news-title">Valorant Episode 8 Act 2: новый агент и карта</h3>
+                            <p class="news-description">
+                                Riot Games анонсировала нового агента с уникальными способностями и 
+                                совершенно новую карту для соревновательного режима.
+                            </p>
+                            <div class="news-footer">
+                                <a href="#" class="news-read-more">Читать далее</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="news-card">
+                        <div class="news-image"></div>
+                        <div class="news-content">
+                            <div class="news-category">Команды</div>
+                            <h3 class="news-title">Состав NAVI пополнился новым снайпером</h3>
+                            <p class="news-description">
+                                Клуб Natus Vincere подписал контракт с молодым талантом из российской 
+                                сцены на позицию AWPer.
+                            </p>
+                            <div class="news-footer">
+                                <a href="#" class="news-read-more">Читать далее</a>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- News Card 6 -->
-                <div class="news-card">
-                    <div class="news-image" style="background: linear-gradient(135deg, rgba(100, 0, 100, 0.8) 0%, rgba(50, 0, 50, 0.9) 100%);">
-                        📊
-                    </div>
-                    <div class="news-card-content">
-                        <span class="news-badge">Аналитика</span>
-                        <h3 class="news-card-title">Статистика турнира: Топ моменты и рекорды</h3>
-                        <p class="news-card-excerpt">
-                            Подробный разбор статистики прошедшего турнира. Самые впечатляющие показатели, 
-                            рекорды и неожиданные открытия сезона.
-                        </p>
-                        <div class="news-card-meta">
-                            <span>25 Января 2026</span>
-                            <span class="read-more">Читать далее →</span>
+                <!-- Load More Button -->
+                <div class="load-more-container">
+                    <button class="load-more-btn">Загрузить ещё</button>
+                </div>
+
+                <!-- Footer -->
+                <div class="footer">
+                    <div class="footer-logo">
+                        <div class="footer-logo-icon">
+                            <img src="img/thunder.png" alt="ThunderCup">
                         </div>
+                        <div>
+                            <div class="footer-brand">ThunderCup</div>
+                            <div class="footer-copyright">Copyright © 2020-2025</div>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Главная</a>
+                        <a href="#" class="footer-link">Новости</a>
+                        <a href="#" class="footer-link">Турниры</a>
+                        <a href="#" class="footer-link">Помощь</a>
                     </div>
                 </div>
             </div>
-
-            <!-- Load More -->
-            <div class="load-more">
-                <button class="load-more-btn">Загрузить ещё</button>
-            </div>
-        </main>
-
-        <!-- Right Sidebar -->
-        <nav class="sidebar" id="sidebar">
-            <div class="logo">
-                <h1>CH</h1>
-            </div>
-            
-            <div class="nav-item">
-                <a href="/" style="display: flex; flex-direction: column; align-items: center; gap: 0.4rem; text-decoration: none; color: inherit; width: 100%;">
-                <svg viewBox="0 0 24 24"><a href="/templates/home.html"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></a></svg>
-                <span>Главная</span>
-                </a>
-            </div>
-            
-            <div class="nav-item">
-                <a href="/tournaments/" style="display: flex; flex-direction: column; align-items: center; gap: 0.4rem; text-decoration: none; color: inherit; width: 100%;">
-                <svg viewBox="0 0 24 24"><a href="/templates/tournaments.html"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></a></svg>
-                <span>Турниры</span>
-                </a>
-            </div>
-            
-            <div class="nav-item active">
-                <a href="/news/" style="display: flex; flex-direction: column; align-items: center; gap: 0.4rem; text-decoration: none; color: inherit; width: 100%;">
-                <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
-                <span>Новости</span>
-                </a>
-            </div>
-            
-            <!-- User Profile Section at Bottom -->
-            <div class="user-info" style="margin-top: auto; padding: 1rem 0.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-                {% if user.is_authenticated %}
-                    <!-- User Profile Card -->
-                    <div style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 10px; padding: 1rem; text-align: center;">
-                        <div class="user-avatar" style="width: 50px; height: 50px; margin: 0 auto 0.5rem; background: linear-gradient(135deg, #00d4ff, #0099ff); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; color: white;">
-                            {{ user.username|first|upper }}
-                        </div>
-                        <div class="user-name" style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.3rem;">
-                            {{ user.username }}
-                        </div>
-                        <button id="logoutBtn" onclick="logout()" style="width: 100%; padding: 0.5rem; background: rgba(255, 69, 0, 0.2); border: 1px solid #ff4500; color: #ff4500; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s ease; font-weight: 600;">
-                            Выход
-                        </button>
-                    </div>
-                {% else %}
-                {% endif %}
-            </div>
-        </nav>
+        </div>
     </div>
 
     <script>
-        // Sidebar toggle for mobile
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
+        // Authorization Modal
+        const authModal = document.getElementById('authModal');
+        const authModalClose = document.getElementById('authModalClose');
+        const loginButtons = document.querySelectorAll('.login-btn');
+        const authForm = document.getElementById('authForm');
+        const passwordToggle = document.getElementById('passwordToggle');
+        const authPassword = document.getElementById('authPassword');
+        const authTabs = document.querySelectorAll('.auth-tab');
+
+        // Open modal
+        loginButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                authModal.style.display = 'flex';
+                setTimeout(() => {
+                    authModal.classList.add('active');
+                }, 10);
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        // Close modal
+        function closeAuthModal() {
+            authModal.classList.remove('active');
+            setTimeout(() => {
+                authModal.style.display = 'none';
+            }, 300);
+            document.body.style.overflow = '';
         }
 
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.querySelector('.mobile-toggle');
-            
-            if (window.innerWidth <= 768) {
-                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
-                    sidebar.classList.remove('active');
+        authModalClose.addEventListener('click', closeAuthModal);
+        
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) {
+                closeAuthModal();
+            }
+        });
+
+        // Password toggle
+        passwordToggle.addEventListener('click', () => {
+            if (authPassword.type === 'password') {
+                authPassword.type = 'text';
+                passwordToggle.textContent = '🔒';
+            } else {
+                authPassword.type = 'password';
+                passwordToggle.textContent = '👁';
+            }
+        });
+
+        // Tab switching
+        authTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                authTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // Form submit
+        authForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Вход выполнен успешно!');
+            closeAuthModal();
+        });
+
+        // Burger menu functionality
+        const burgerMenu = document.getElementById('burgerMenu');
+        const sidebar = document.getElementById('sidebar');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+
+        function toggleMenu() {
+            burgerMenu.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            mobileOverlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        }
+
+        burgerMenu.addEventListener('click', toggleMenu);
+        mobileOverlay.addEventListener('click', toggleMenu);
+
+        // Close menu on navigation item click (mobile)
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Close menu on mobile after selection
+                if (window.innerWidth <= 768) {
+                    toggleMenu();
                 }
-            }
-        });
-
-        window.addEventListener('resize', function() {
-            const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth > 768) {
-                sidebar.classList.remove('active');
-            }
-        });
-
-        // Filter buttons functionality
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
             });
         });
 
-        // Load more functionality
-        const loadMoreBtn = document.querySelector('.load-more-btn');
-        loadMoreBtn.addEventListener('click', () => {
-            alert('Загрузка дополнительных новостей... (демо)');
+        // Filter tabs functionality
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
         });
 
-        // News card click
-        const newsCards = document.querySelectorAll('.news-card, .featured-card');
-        newsCards.forEach(card => {
-            card.addEventListener('click', () => {
-                alert('Открытие полной статьи... (демо)');
-            });
+        // Load more button
+        document.querySelector('.load-more-btn').addEventListener('click', () => {
+            alert('Загружаем больше новостей...');
         });
     </script>
 </body>
