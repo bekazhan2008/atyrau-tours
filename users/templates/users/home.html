@@ -158,6 +158,15 @@
             color: #9ca3af;
         }
 
+        .nav-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        }
+
+
         .nav-item.active .nav-label {
             color: #fff;
         }
@@ -918,6 +927,7 @@
             .auth-social-buttons {
                 grid-template-columns: repeat(4, 1fr);
             }
+        }
     </style>
 </head>
 <body>
@@ -933,79 +943,77 @@
         <div class="mobile-overlay" id="mobileOverlay"></div>
 
         <!-- Authorization Modal -->
-        <div class="auth-modal" id="authModal">
-            <div class="auth-modal-content">
-                <button class="auth-modal-close" id="authModalClose">×</button>
-                <h2 class="auth-modal-title">Вход на CyberHero</h2>
-                
-                <div class="auth-tabs">
-                    <div class="auth-tab active" data-tab="login">Логин</div>
-                    <div class="auth-tab" data-tab="phone">Номер телефона</div>
+        <div id="authModal" style="display:none;">
+            <div>
+                <button id="closeAuth">×</button>
+
+                <div class="tabs">
+                    <span class="tab active" data-tab="login">Логин</span>
+                    <span class="tab" data-tab="register">Регистрация</span>
                 </div>
 
-                <form class="auth-form" id="authForm">
-                    <input type="text" class="auth-input" placeholder="Логин" required>
-                    
-                    <div class="auth-password-wrapper">
-                        <input type="password" class="auth-input" id="authPassword" placeholder="Пароль" required>
-                        <button type="button" class="auth-password-toggle" id="passwordToggle">👁</button>
-                    </div>
+                <!-- ЛОГИН -->
+                <form method="post" action="{% url 'api_login' %}" class="form active" id="login">
+                    {% csrf_token %}
+                    <input name="username" placeholder="Логин" required>
+                    <input type="password" name="password" placeholder="Пароль" required>
+                    <button type="submit">Войти</button>
+                </form>
 
-                    <a href="#" class="auth-forgot">ВОССТАНОВИТЬ ПАРОЛЬ</a>
-
-                    <div class="auth-social">
-                        <div class="auth-social-title">Войти другим способом</div>
-                        <div class="auth-social-buttons">
-                            <div class="auth-social-btn" title="Telegram">📱</div>
-                            <div class="auth-social-btn" title="Google">G</div>
-                            <div class="auth-social-btn" title="VK">ВК</div>
-                            <div class="auth-social-btn" title="Discord">💬</div>
-                        </div>
-                    </div>
-
-                    <div class="auth-captcha">
-                        <input type="checkbox" class="auth-captcha-checkbox" id="captcha" required>
-                        <div>
-                            <label for="captcha" class="auth-captcha-text">Я не робот</label>
-                            <div class="auth-captcha-info">SmartCaptcha by Yandex Cloud</div>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="auth-submit">Войти</button>
-                    <button type="button" class="auth-register-btn">Регистрация</button>
+                <!-- РЕГИСТРАЦИЯ -->
+                <form method="post" action="{% url 'api_register' %}" class="form" id="register">
+                    {% csrf_token %}
+                    <input name="username" placeholder="Логин" required>
+                    <input type="password" name="password" placeholder="Пароль" required>
+                    <button type="submit">Регистрация</button>
                 </form>
             </div>
         </div>
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
+        <a href="{% url 'home' %}">
             <div class="logo">
-                <img src="{% static 'img\thunder.png' %}" alt="ThunderCup Logo">
+                <img src="{% static 'img/thunder.png' %}" alt="ThunderCup Logo">
             </div>
+        </a>
             
             <div class="nav-items">
                 <div class="nav-item active">
+                <a href="{% url 'home' %}" class="nav-link">
                     <div class="nav-icon">
-                        <img src="{% static 'img\home_icon.png' %}" alt="Home">
+                        <img src="{% static 'img/home_icon.png' %}" alt="Home">
                     </div>
                     <div class="nav-label">Главная</div>
+                </a>
                 </div>
                 
                 <div class="nav-item">
+                <a href="{% url 'tournaments' %}" class="nav-link">
                     <div class="nav-icon">
-                        <a href=""><img src="{% static 'img\tournaments_icon.png' %}" alt="Tournaments"></a>
+                        <img src="{% static 'img/tournaments_icon.png' %}" alt="Tournaments">
                     </div>
                     <div class="nav-label">Турниры</div>
+                </a>
                 </div>
                 
                 <div class="nav-item">
+                <a href="{% url 'news' %}" class="nav-link">
                     <div class="nav-icon">
-                        <img src="{%static 'img\news_icon.png' %}" alt="News">
+                        <img src="{%static 'img/news_icon.png' %}" alt="News">
                     </div>
                     <div class="nav-label">Новости</div>
+                </a>
                 </div>
             </div>
 
-            <button class="login-btn">ВОЙТИ</button>
+            {% if user.is_authenticated %}
+            <div class="profile-box">
+                <img src="{% static 'img/avatar.png' %}" class="profile-avatar">
+                <div class="profile-username">{{ user.username }}</div>
+            </div>
+            {% else %}
+            <button id="openAuth" class="login-btn">ВОЙТИ</button>
+            {% endif %}
         </div>
 
         <!-- Main Content -->

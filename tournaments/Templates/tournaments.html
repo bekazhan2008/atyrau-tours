@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -155,6 +156,14 @@
         .nav-label {
             font-size: 11px;
             color: #9ca3af;
+        }
+
+        .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
         }
 
         .nav-item.active .nav-label {
@@ -960,6 +969,7 @@
             .auth-social-buttons {
                 grid-template-columns: repeat(4, 1fr);
             }
+        }
     </style>
 </head>
 <body>
@@ -975,75 +985,39 @@
         <div class="mobile-overlay" id="mobileOverlay"></div>
 
         <!-- Authorization Modal -->
-        <div class="auth-modal" id="authModal">
-            <div class="auth-modal-content">
-                <button class="auth-modal-close" id="authModalClose">×</button>
-                <h2 class="auth-modal-title">Вход на CyberHero</h2>
-                
-                <div class="auth-tabs">
-                    <div class="auth-tab active" data-tab="login">Логин</div>
-                    <div class="auth-tab" data-tab="phone">Номер телефона</div>
-                </div>
-
-                <form class="auth-form" id="authForm">
-                    <input type="text" class="auth-input" placeholder="Логин" required>
-                    
-                    <div class="auth-password-wrapper">
-                        <input type="password" class="auth-input" id="authPassword" placeholder="Пароль" required>
-                        <button type="button" class="auth-password-toggle" id="passwordToggle">👁</button>
-                    </div>
-
-                    <a href="#" class="auth-forgot">ВОССТАНОВИТЬ ПАРОЛЬ</a>
-
-                    <div class="auth-social">
-                        <div class="auth-social-title">Войти другим способом</div>
-                        <div class="auth-social-buttons">
-                            <div class="auth-social-btn" title="Telegram">📱</div>
-                            <div class="auth-social-btn" title="Google">G</div>
-                            <div class="auth-social-btn" title="VK">ВК</div>
-                            <div class="auth-social-btn" title="Discord">💬</div>
-                        </div>
-                    </div>
-
-                    <div class="auth-captcha">
-                        <input type="checkbox" class="auth-captcha-checkbox" id="captcha" required>
-                        <div>
-                            <label for="captcha" class="auth-captcha-text">Я не робот</label>
-                            <div class="auth-captcha-info">SmartCaptcha by Yandex Cloud</div>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="auth-submit">Войти</button>
-                    <button type="button" class="auth-register-btn">Регистрация</button>
-                </form>
-            </div>
-        </div>
-        <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
+        <a href="{% url 'home' %}">
             <div class="logo">
-                <img src="img\thunder.png" alt="ThunderCup Logo">
+                <img src="{% static 'img/thunder.png' %}" alt="ThunderCup Logo">
             </div>
+        </a>
             
             <div class="nav-items">
-                <div class="nav-item ">
+                <div class="nav-item">
+                <a href="{% url 'home' %}" class="nav-link">
                     <div class="nav-icon">
-                        <img src="img\home_icon.png" alt="Home">
+                        <img src="{% static 'img/home_icon.png' %}" alt="Home">
                     </div>
                     <div class="nav-label">Главная</div>
+                </a>
                 </div>
                 
                 <div class="nav-item active">
+                <a href="{% url 'tournaments' %}" class="nav-link">
                     <div class="nav-icon">
-                        <img src="img\tournaments_icon.png" alt="Tournaments">
+                        <img src="{% static 'img/tournaments_icon.png' %}" alt="Tournaments">
                     </div>
                     <div class="nav-label">Турниры</div>
+                </a>
                 </div>
                 
                 <div class="nav-item">
+                <a href="{% url 'news' %}" class="nav-link">
                     <div class="nav-icon">
-                        <img src="img\news_icon.png" alt="News">
+                        <img src="{%static 'img/news_icon.png' %}" alt="News">
                     </div>
                     <div class="nav-label">Новости</div>
+                </a>
                 </div>
             </div>
 
@@ -1059,29 +1033,29 @@
 
             <!-- Game Selection -->
             <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 30px;">
-                <div style="width: 70px; height: 70px; border-radius: 12px; overflow: hidden; cursor: pointer; background: #1f2937;">
-                    <img src="img\all-games.png" alt="Все игры" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="width: 70px; height: 70px; border-radius: 12px; overflow: hidden; cursor: pointer; background: #1f2937; align-content: center;">
+                    <img src="{% static 'img/all-games.png' %}" alt="Все игры" style="width: 100%; height: 80%;">
                 </div>
                 <div style="width: 70px; height: 70px; border-radius: 12px; overflow: hidden; cursor: pointer; background: #1f2937;">
-                    <img src="img\logo-csgo.png" alt="CS:GO" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="{% static 'img/logo-csgo.png' %}" alt="CS:GO" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div style="width: 70px; height: 70px; border-radius: 12px; overflow: hidden; cursor: pointer; background: #1f2937;">
-                    <img src="img\logo-dota2.png" alt="Dota 2" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="{% static 'img/logo-dota2.png' %}" alt="Dota 2" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div style="width: 70px; height: 70px; border-radius: 12px; overflow: hidden; cursor: pointer; background: #1f2937;">
-                    <img src="img\logo-valorant.png" alt="Valorant" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="{% static 'img/logo-valorant.png' %}" alt="Valorant" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div style="width: 70px; height: 70px; border-radius: 12px; overflow: hidden; cursor: pointer; background: #1f2937;">
-                    <img src="img\logo-pubg.png" alt="PUBG" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="{% static 'img/logo-pubg.png' %}" alt="PUBG" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div style="width: 70px; height: 70px; border-radius: 12px; overflow: hidden; cursor: pointer; background: #1f2937;">
-                    <img src="img\logo-clash.png" alt="Clash Royale" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="{% static 'img/logo-clash.png' %}" alt="Clash Royale" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div style="width: 70px; height: 70px; border-radius: 12px; overflow: hidden; cursor: pointer; background: #1f2937;">
-                    <img src="img\logo-brawl.png" alt="Brawl Stars" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="{% static 'img/logo-brawl.png' %}" alt="Brawl Stars" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div style="width: 70px; height: 70px; border-radius: 12px; overflow: hidden; cursor: pointer; background: #1f2937;">
-                    <img src="img\logo-standoff.png" alt="Standoff 2" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="{% static 'img/logo-standoff.png' %}" alt="Standoff 2" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
             </div>
 

@@ -18,14 +18,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from tournaments.views import home, tournaments_list, news_list
+from tournaments.views import home, tournaments_list
 from users.views import api_login, api_register, logout_view
+from news.views import news
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('users.urls'), name='home'),
     path('tournaments/', tournaments_list, name='tournaments'),
-    path('news/', news_list, name='news'),
+    path('news/', news, name='news'),
     
     # API endpoints
     path('api/login/', api_login, name='api_login'),
