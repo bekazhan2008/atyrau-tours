@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -155,6 +156,14 @@
         .nav-label {
             font-size: 11px;
             color: #9ca3af;
+        }
+
+        .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
         }
 
         .nav-item.active .nav-label {
@@ -905,30 +914,38 @@
 
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
+        <a href="{% url 'home' %}">
             <div class="logo">
-                <img src="../../../static/img/thunder.png" alt="ThunderCup Logo">
+                <img src="{% static 'img/thunder.png' %}" alt="ThunderCup Logo">
             </div>
+        </a>
             
             <div class="nav-items">
                 <div class="nav-item">
+                <a href="{% url 'home' %}" class="nav-link">
                     <div class="nav-icon">
-                        <img src="../../../static/img/home_icon.png" alt="Home">
+                        <img src="{% static 'img/home_icon.png' %}" alt="Home">
                     </div>
                     <div class="nav-label">Главная</div>
+                </a>
                 </div>
                 
                 <div class="nav-item">
+                <a href="{% url 'tournaments' %}" class="nav-link">
                     <div class="nav-icon">
-                        <img src="../../../static/img/tournaments_icon.png" alt="Tournaments">
+                        <img src="{% static 'img/tournaments_icon.png' %}" alt="Tournaments">
                     </div>
                     <div class="nav-label">Турниры</div>
+                </a>
                 </div>
                 
                 <div class="nav-item active">
+                <a href="{% url 'news' %}" class="nav-link">
                     <div class="nav-icon">
-                        <img src="../../../static/img/news_icon.png" alt="News">
+                        <img src="{% static 'img/news_icon.png' %}" alt="News">
                     </div>
                     <div class="nav-label">Новости</div>
+                </a>
                 </div>
             </div>
 
