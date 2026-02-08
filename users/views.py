@@ -4,17 +4,16 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from .forms import LoginForm, RegisterForm
 from .models import User
-from django.contrib import messages
 import json
 from django.http import JsonResponse
+from django.contrib import messages
 
 
 def home(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    return render(request, 'users/home.html')
+    login_form = LoginForm()
+    return render(request, 'users/home.html', {'login_form': login_form})
 
-def register(request):
+def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -25,6 +24,24 @@ def register(request):
     else:
         form = RegisterForm()
     return render(request, 'users/register.html', {'form': form})
+
+def api_login(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            login_input = data.get('login')  # у тебя может быть 'username' или 'email'
+            password = data.get('password')
+
+            # Поиск пользователя по username или email
+            user = authenticate(request, username=login_input, password=password)
+            if user is not None:
+                login(request, user)
+                return JsonResponse({'success': True, 'message': f'Вход выполнен!'})
+            else:
+                return JsonResponse({'success': False, 'message': 'Неверный логин или пароль'}, status=401)
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Неверный формат данных'}, status=400)
+    return JsonResponse({'success': False, 'message': 'Только POST'}, status=405)
 
 def user_login(request):
     if request.method == 'POST':

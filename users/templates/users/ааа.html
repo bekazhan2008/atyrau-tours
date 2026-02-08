@@ -944,16 +944,12 @@
                 </div>
 
                 <form method='post' class="auth-form" id="authForm">
-                    <!--<input type="text" class="auth-input" placeholder="Логин" required>
+                    <input type="text" class="auth-input" placeholder="Логин" required>
 
                     <div class="auth-password-wrapper">
                         <input type="password" class="auth-input" id="authPassword" placeholder="Пароль" required>
                         <button type="button" class="auth-password-toggle" id="passwordToggle">👁</button>
-                    </div>-->
-
-                    {% csrf_token %}
-                    {{ login_form.username }}
-                    {{ login_form.password }}
+                    </div>
 
                     <a href="#" class="auth-forgot">ВОССТАНОВИТЬ ПАРОЛЬ</a>
 
@@ -976,13 +972,7 @@
                     </div>
 
                     <button type="submit" class="auth-submit">Войти</button>
-                    <button type="button" class="auth-register-btn" id="registerBtn">Регистрация</button>
-                    <script>
-                        const registerBtn = document.getElementById('registerBtn');
-                        registerBtn.addEventListener('click', () => {
-                        window.location.href = '/register/';
-                        });
-                    </script>
+                    <button type="button" class="auth-register-btn">Регистрация</button>
                 </form>
             </div>
         </div>
@@ -1318,92 +1308,6 @@
         // setInterval(() => {
         //     showSlide(currentSlide + 1);
         // }, 5000);
-
-        authForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    // Определяем тип формы
-    const formType = document.querySelector('.auth-tab.active').dataset.type; // 'login' или 'register'
-
-    // Собираем данные из формы
-    let data;
-    if (formType === 'login') {
-        data = {
-            login: authForm.querySelector('input[name="login"]').value,
-            password: authForm.querySelector('input[name="password"]').value
-        };
-    } else if (formType === 'register') {
-        data = {
-            username: authForm.querySelector('input[name="username"]').value,
-            email: authForm.querySelector('input[name="email"]').value,
-            phone: authForm.querySelector('input[name="phone"]')?.value || '',
-            password1: authForm.querySelector('input[name="password1"]').value,
-            password2: authForm.querySelector('input[name="password2"]').value
-        };
-    }
-
-    const url = formType === 'login' ? '/api/login/' : '/api/register/';
-
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken') // функция getCookie уже должна быть в проекте
-            },
-            body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            alert(result.message); // можно заменить на красивое уведомление
-            closeAuthModal();
-            location.reload(); // обновляем страницу после успешного входа
-        } else {
-            // выводим ошибки
-            let errorsDiv = authForm.querySelector('.form-errors');
-            if (!errorsDiv) {
-                errorsDiv = document.createElement('div');
-                errorsDiv.classList.add('form-errors');
-                authForm.prepend(errorsDiv);
-            }
-            errorsDiv.innerHTML = '';
-            if (result.errors) {
-                // для регистрации
-                for (const field in result.errors) {
-                    result.errors[field].forEach(err => {
-                        const p = document.createElement('p');
-                        p.textContent = err.message;
-                        errorsDiv.appendChild(p);
-                    });
-                }
-            } else {
-                const p = document.createElement('p');
-                p.textContent = result.message;
-                errorsDiv.appendChild(p);
-            }
-        }
-    } catch (err) {
-        console.error(err);
-    }
-});
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            cookie = cookie.trim();
-            if (cookie.startsWith(name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
     </script>
 </body>
 </html>
