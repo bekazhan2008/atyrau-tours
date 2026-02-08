@@ -14,34 +14,31 @@ def home(request):
     return render(request, 'users/home.html', {'login_form': login_form})
 
 def register_view(request):
-    if request.method == 'POST':
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, f'Аккаунт {user.username} успешно создан!')
-            return redirect('home')
-    else:
-        form = RegisterForm()
-    return render(request, 'users/register.html', {'form': form})
+    if request.method == "POST":
+        email = request.POST.get("email")
+        username = request.POST.get("nickname")
+        password = request.POST.get("password")
+        password2 = request.POST.get("password2")
 
-def api_login(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            login_input = data.get('login')  # у тебя может быть 'username' или 'email'
-            password = data.get('password')
+        if password != password2:
+            return redirect("home")
 
-            # Поиск пользователя по username или email
-            user = authenticate(request, username=login_input, password=password)
-            if user is not None:
-                login(request, user)
-                return JsonResponse({'success': True, 'message': f'Вход выполнен!'})
-            else:
-                return JsonResponse({'success': False, 'message': 'Неверный логин или пароль'}, status=401)
-        except json.JSONDecodeError:
-            return JsonResponse({'success': False, 'message': 'Неверный формат данных'}, status=400)
-    return JsonResponse({'success': False, 'message': 'Только POST'}, status=405)
+        if User.objects.filter(username=username).exists():
+            return redirect("home")
+
+        if User.objects.filter(email=email).exists():
+            return redirect("home")
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
+
+        login(request, user)
+        return redirect("home")
+
+    return redirect("home")
 
 def user_login(request):
     if request.method == 'POST':
@@ -65,88 +62,19 @@ def user_login(request):
 
 def user_logout(request):
     logout(request)
-    return redirect('login')
+    return redirect('home')
 
-@require_http_methods(["POST"])
 def api_login(request):
-    """API endpoint for login"""
-    try:
-        data = json.loads(request.body)
-        login_input = data.get('login')
-        password = data.get('password')
-        
-        # Try to authenticate by username or email
-        user = authenticate(request, username=login_input, password=password)
-        
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return JsonResponse({
-                'success': True,
-                'message': 'Login successful',
-                'user': {
-                    'id': user.id,
-                    'username': user.username,
-                    'email': user.email,
-                }
-            })
-        else:
-            return JsonResponse({
-                'success': False,
-                'message': 'Invalid credentials'
-            }, status=401)
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'message': 'Invalid JSON'}, status=400)
+            return redirect("home")
 
-@require_http_methods(["POST"])
-def api_register(request):
-    """API endpoint for registration"""
-    try:
-        data = json.loads(request.body)
-        username = data.get('login')
-        email = data.get('email')
-        password = data.get('password')
-        phone = data.get('phone', '')
-        
-        # Validation
-        if User.objects.filter(username=username).exists():
-            return JsonResponse({
-                'success': False,
-                'message': 'Username already exists'
-            }, status=400)
-        
-        if User.objects.filter(email=email).exists():
-            return JsonResponse({
-                'success': False,
-                'message': 'Email already exists'
-            }, status=400)
-        
-        if len(password) < 6:
-            return JsonResponse({
-                'success': False,
-                'message': 'Password must be at least 6 characters'
-            }, status=400)
-        
-        # Create user
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password,
-            phone=phone
-        )
-        
-        login(request, user)
-        
-        return JsonResponse({
-            'success': True,
-            'message': 'Registration successful',
-            'user': {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email,
-            }
-        })
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'message': 'Invalid JSON'}, status=400)
+        return redirect("home")
 
 def logout_view(request):
     """Logout user"""

@@ -1,4 +1,4 @@
-* {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -149,6 +149,15 @@
             font-size: 11px;
             color: #9ca3af;
         }
+
+        .nav-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        }
+
 
         .nav-item.active .nav-label {
             color: #fff;
@@ -708,7 +717,7 @@
                 gap: 20px;
                 text-align: center;
             }
-
+            
             .footer-links {
                 align-items: center !important;
             }
@@ -910,3 +919,4 @@
             .auth-social-buttons {
                 grid-template-columns: repeat(4, 1fr);
             }
+        }
