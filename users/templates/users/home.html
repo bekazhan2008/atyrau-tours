@@ -191,6 +191,13 @@
             transform: translateY(-2px);
         }
 
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
         /* Main Content */
         .main-content {
             flex: 1;
@@ -943,29 +950,75 @@
         <div class="mobile-overlay" id="mobileOverlay"></div>
 
         <!-- Authorization Modal -->
-        <div id="authModal" style="display:none;">
-            <div>
-                <button id="closeAuth">×</button>
-
-                <div class="tabs">
-                    <span class="tab active" data-tab="login">Логин</span>
-                    <span class="tab" data-tab="register">Регистрация</span>
+        <div class="auth-modal" id="authModal">
+            <div class="auth-modal-content">
+                <button class="auth-modal-close" id="authModalClose">×</button>
+                <h2 class="auth-modal-title" id="authModalTitle">Вход на ThunderCup</h2>
+                
+                <div class="auth-tabs">
+                    <div class="auth-tab active" data-tab="login">Логин</div>
+                    <div class="auth-tab" data-tab="phone">Номер телефона</div>
                 </div>
 
-                <!-- ЛОГИН -->
-                <form method="post" action="{% url 'api_login' %}" class="form active" id="login">
+                <div id="authError" class="auth-error"></div>
+                <form method="post" action="{% url 'api_login' %}" class="auth-form" id="authForm">
                     {% csrf_token %}
-                    <input name="username" placeholder="Логин" required>
-                    <input type="password" name="password" placeholder="Пароль" required>
-                    <button type="submit">Войти</button>
+                    <input type="text" class="auth-input" id="authInput" name="username" placeholder="Логин" required>
+                    
+                    <div class="auth-password-wrapper">
+                        <input type="password" class="auth-input" id="authPassword" name="password" placeholder="Пароль" required>
+                        <button type="button" class="auth-password-toggle" id="passwordToggle">👁</button>
+                    </div>
+
+                    <a href="#" class="auth-forgot">ВОССТАНОВИТЬ ПАРОЛЬ</a>
+
+                    <div class="auth-social">
+                        <div class="auth-social-title">Войти другим способом</div>
+                        <div class="auth-social-buttons">
+                            <div class="auth-social-btn" title="Telegram">📱</div>
+                            <div class="auth-social-btn" title="Google">G</div>
+                            <div class="auth-social-btn" title="VK">ВК</div>
+                            <div class="auth-social-btn" title="Discord">💬</div>
+                        </div>
+                    </div>
+
+                    <div class="auth-captcha">
+                        <input type="checkbox" class="auth-captcha-checkbox" id="captcha" required>
+                        <div>
+                            <label for="captcha" class="auth-captcha-text">Я не робот</label>
+                            <div class="auth-captcha-info">SmartCaptcha by Yandex Cloud</div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="auth-submit">Войти</button>
+                    <button type="button" class="auth-register-btn" id="switchToRegister">Регистрация</button>
                 </form>
 
-                <!-- РЕГИСТРАЦИЯ -->
-                <form method="post" action="{% url 'api_register' %}" class="form" id="register">
+                <!-- Register Form -->
+                <form method="post" class="auth-form" id="registerForm" style="display: none;" action="{% url 'api_register' %}">
                     {% csrf_token %}
-                    <input name="username" placeholder="Логин" required>
-                    <input type="password" name="password" placeholder="Пароль" required>
-                    <button type="submit">Регистрация</button>
+                    <input type="email" class="auth-input" id="registerEmail" name="email" placeholder="Email" required>
+                    <input type="text" class="auth-input" id="registerNickname" name="nickname" placeholder="Никнейм" required>
+                    
+                    <div class="auth-password-wrapper">
+                        <input type="password" class="auth-input" id="registerPassword" name="password" placeholder="Пароль" required>
+                        <button type="button" class="auth-password-toggle" id="registerPasswordToggle">👁</button>
+                    </div>
+
+                    <div class="auth-password-wrapper">
+                        <input type="password" class="auth-input" id="registerPassword2" name="password2" placeholder="Подтвердите пароль" required>
+                    </div>
+
+                    <div class="auth-captcha">
+                        <input type="checkbox" class="auth-captcha-checkbox" id="registerCaptcha" required>
+                        <div>
+                            <label for="registerCaptcha" class="auth-captcha-text">Я не робот</label>
+                            <div class="auth-captcha-info">SmartCaptcha by Yandex Cloud</div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="auth-submit">Зарегистрироваться</button>
+                    <button type="button" class="auth-register-btn" id="switchToLogin">Уже есть аккаунт? Войти</button>
                 </form>
             </div>
         </div>
@@ -1010,6 +1063,10 @@
             <div class="profile-box">
                 <img src="{% static 'img/default-avatar.png' %}" class="profile-avatar">
                 <div class="profile-username">{{ user.username }}</div>
+                <form method="post" action="{% url 'user_logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="login-btn">Выйти</button>
+                </form>
             </div>
             {% else %}
             <button id="openAuth" class="login-btn">ВОЙТИ</button>
@@ -1217,13 +1274,6 @@
             });
         });
 
-        // Form submit
-        authForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            alert('Вход выполнен успешно!');
-            closeAuthModal();
-        });
-
         // Burger menu functionality
         const burgerMenu = document.getElementById('burgerMenu');
         const sidebar = document.getElementById('sidebar');
@@ -1316,6 +1366,20 @@
         // setInterval(() => {
         //     showSlide(currentSlide + 1);
         // }, 5000);
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     </script>
 </body>
 </html>
