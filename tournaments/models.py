@@ -16,16 +16,20 @@ class Tournament(models.Model):
         ('round_robin', 'Round Robin'),
     ]
 
-    GAME_CHOICES = [
-        ('standoff2', 'Standoff 2'),
-        ('pubg', 'PUBG Mobile'),
-        ('csgo', 'CS:GO'),
-        ('dota2', 'Dota 2'),
-        ('valorant', 'Valorant'),
-        ('freefire', 'Free Fire'),
-        ('brawlstars', 'Brawl Stars'),
-        ('apex', 'Apex Legends'),
-    ]
+    GAME_IMAGES = {
+        'standoff2': 'img/logo-standoff.png',
+        'pubg': 'img/logo-pubg.png',
+        'csgo': 'img/logo-csgo.png',
+        'dota2': 'img/logo-dota2.png',
+        'valorant': 'img/logo-valorant.png',
+        'brawlstars': 'img/logo-brawl.png',
+        'clashroyale': 'img/logo-clash.png',
+    }
+
+    def get_image(self):
+        return self.GAME_IMAGES.get(self.game, 'img/default.png')
+
+    GAME_CHOICES = [(key, key.capitalize()) for key in GAME_IMAGES.keys()]
 
     name = models.CharField(max_length=255, verbose_name='Название турнира')
     game = models.CharField(max_length=50, choices=GAME_CHOICES, verbose_name='Игра')
