@@ -995,7 +995,7 @@
                 </form>
 
                 <!-- Register Form -->
-                <form method="post" class="auth-form" id="registerForm" style="display: none;" action="{% url 'api_register' %}">
+                <form method="post" class="auth-form" id="registerForm" style="display: none;" action="{% url 'register' %}">
                     {% csrf_token %}
                     <input type="email" class="auth-input" id="registerEmail" name="email" placeholder="Email" required>
                     <input type="text" class="auth-input" id="registerNickname" name="nickname" placeholder="Никнейм" required>
@@ -1065,7 +1065,7 @@
                 <div class="profile-username">{{ user.username }}</div>
                 <form method="post" action="{% url 'user_logout' %}">
                     {% csrf_token %}
-                    <button type="submit" class="login-btn">Выйти</button>
+                    <button type="submit">Выйти</button>
                 </form>
             </div>
             {% else %}
@@ -1266,13 +1266,63 @@
             }
         });
 
-        // Tab switching
+        // Tab switching - переключение между Логин и Номер телефона
+        const authInput = document.getElementById('authInput');
         authTabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 authTabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
+                
+                // Изменение placeholder в зависимости от выбранной вкладки
+                const tabType = tab.dataset.tab;
+                if (tabType === 'login') {
+                    authInput.placeholder = 'Логин';
+                    authInput.type = 'text';
+                } else if (tabType === 'phone') {
+                    authInput.placeholder = 'Номер телефона';
+                    authInput.type = 'tel';
+                }
             });
         });
+
+        const authTabsContainer = document.querySelector('.auth-tabs');
+
+        // Кнопка "Регистрация" - переключение на форму регистрации
+        if (switchToRegister) {
+            switchToRegister.addEventListener('click', () => {
+                authForm.style.display = 'none';
+                registerForm.style.display = 'flex';
+                authModalTitle.textContent = 'Регистрация';
+                authTabsContainer.style.display = 'none';
+                authError.classList.remove('active');
+            });
+        }
+
+        // Кнопка "Уже есть аккаунт? Войти" - переключение на форму входа
+        if (switchToLogin) {
+            switchToLogin.addEventListener('click', () => {
+                registerForm.style.display = 'none';
+                authForm.style.display = 'flex';
+                authModalTitle.textContent = 'Вход на CyberHero';
+                authTabsContainer.style.display = 'flex';
+                authError.classList.remove('active');
+            });
+        }
+
+        // Password toggle для формы регистрации
+        const registerPasswordToggle = document.getElementById('registerPasswordToggle');
+        const registerPassword = document.getElementById('registerPassword');
+        if (registerPasswordToggle) {
+            registerPasswordToggle.addEventListener('click', () => {
+                if (registerPassword.type === 'password') {
+                    registerPassword.type = 'text';
+                    registerPasswordToggle.textContent = '🔒';
+                } else {
+                    registerPassword.type = 'password';
+                    registerPasswordToggle.textContent = '👁';
+                }
+            });
+        }
 
         // Burger menu functionality
         const burgerMenu = document.getElementById('burgerMenu');
