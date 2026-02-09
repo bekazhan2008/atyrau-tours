@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Новости</title>
-</head>
-<body>
-    <h1>Новости</h1>
-</body>
-</html>
+<h1>Новости</h1>
+
+{% for item in news %}
+    <h2>{{ item.title }}</h2>
+    <p>{{ item.text }}</p>
+{% endfor %}

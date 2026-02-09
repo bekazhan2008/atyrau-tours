@@ -12,7 +12,6 @@ class User(AbstractUser):
     city = models.CharField(max_length=100, blank=True)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     phone = models.CharField(max_length=20, blank=True, unique=True, null=True)
-    email = models.CharField(max_length=100, blank=True, unique=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
