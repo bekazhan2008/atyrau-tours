@@ -158,15 +158,6 @@
             color: #9ca3af;
         }
 
-        .nav-link {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        }
-
-
         .nav-item.active .nav-label {
             color: #fff;
         }
@@ -189,13 +180,6 @@
         .login-btn:hover {
             background: #e5e7eb;
             transform: translateY(-2px);
-        }
-
-
-        .profile-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
         }
 
         /* Main Content */
@@ -732,7 +716,7 @@
                 gap: 20px;
                 text-align: center;
             }
-            
+
             .footer-links {
                 align-items: center !important;
             }
@@ -934,7 +918,6 @@
             .auth-social-buttons {
                 grid-template-columns: repeat(4, 1fr);
             }
-        }
     </style>
 </head>
 <body>
@@ -953,20 +936,18 @@
         <div class="auth-modal" id="authModal">
             <div class="auth-modal-content">
                 <button class="auth-modal-close" id="authModalClose">×</button>
-                <h2 class="auth-modal-title" id="authModalTitle">Вход на ThunderCup</h2>
-                
+                <h2 class="auth-modal-title">Вход на CyberHero</h2>
+
                 <div class="auth-tabs">
                     <div class="auth-tab active" data-tab="login">Логин</div>
                     <div class="auth-tab" data-tab="phone">Номер телефона</div>
                 </div>
 
-                <div id="authError" class="auth-error"></div>
-                <form method="post" action="{% url 'api_login' %}" class="auth-form" id="authForm">
-                    {% csrf_token %}
-                    <input type="text" class="auth-input" id="authInput" name="username" placeholder="Логин" required>
-                    
+                <form method='post' class="auth-form" id="authForm">
+                    <input type="text" class="auth-input" placeholder="Логин" required>
+
                     <div class="auth-password-wrapper">
-                        <input type="password" class="auth-input" id="authPassword" name="password" placeholder="Пароль" required>
+                        <input type="password" class="auth-input" id="authPassword" placeholder="Пароль" required>
                         <button type="button" class="auth-password-toggle" id="passwordToggle">👁</button>
                     </div>
 
@@ -991,86 +972,40 @@
                     </div>
 
                     <button type="submit" class="auth-submit">Войти</button>
-                    <button type="button" class="auth-register-btn" id="switchToRegister">Регистрация</button>
-                </form>
-
-                <!-- Register Form -->
-                <form method="post" class="auth-form" id="registerForm" style="display: none;" action="{% url 'register' %}">
-                    {% csrf_token %}
-                    <input type="email" class="auth-input" id="registerEmail" name="email" placeholder="Email" required>
-                    <input type="text" class="auth-input" id="registerNickname" name="nickname" placeholder="Никнейм" required>
-                    
-                    <div class="auth-password-wrapper">
-                        <input type="password" class="auth-input" id="registerPassword" name="password" placeholder="Пароль" required>
-                        <button type="button" class="auth-password-toggle" id="registerPasswordToggle">👁</button>
-                    </div>
-
-                    <div class="auth-password-wrapper">
-                        <input type="password" class="auth-input" id="registerPassword2" name="password2" placeholder="Подтвердите пароль" required>
-                    </div>
-
-                    <div class="auth-captcha">
-                        <input type="checkbox" class="auth-captcha-checkbox" id="registerCaptcha" required>
-                        <div>
-                            <label for="registerCaptcha" class="auth-captcha-text">Я не робот</label>
-                            <div class="auth-captcha-info">SmartCaptcha by Yandex Cloud</div>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="auth-submit">Зарегистрироваться</button>
-                    <button type="button" class="auth-register-btn" id="switchToLogin">Уже есть аккаунт? Войти</button>
+                    <button type="button" class="auth-register-btn">Регистрация</button>
                 </form>
             </div>
         </div>
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
-        <a href="{% url 'home' %}">
             <div class="logo">
-                <img src="{% static 'img/thunder.png' %}" alt="ThunderCup Logo">
+                <img src="{% static 'img\thunder.png' %}" alt="ThunderCup Logo">
             </div>
-        </a>
-            
+
             <div class="nav-items">
                 <div class="nav-item active">
-                <a href="{% url 'home' %}" class="nav-link">
                     <div class="nav-icon">
-                        <img src="{% static 'img/home_icon.png' %}" alt="Home">
+                        <img src="{% static 'img\home_icon.png' %}" alt="Home">
                     </div>
                     <div class="nav-label">Главная</div>
-                </a>
                 </div>
-                
+
                 <div class="nav-item">
-                <a href="{% url 'tournaments' %}" class="nav-link">
                     <div class="nav-icon">
-                        <img src="{% static 'img/tournaments_icon.png' %}" alt="Tournaments">
+                        <a href=""><img src="{% static 'img\tournaments_icon.png' %}" alt="Tournaments"></a>
                     </div>
                     <div class="nav-label">Турниры</div>
-                </a>
                 </div>
-                
+
                 <div class="nav-item">
-                <a href="{% url 'news' %}" class="nav-link">
                     <div class="nav-icon">
-                        <img src="{%static 'img/news_icon.png' %}" alt="News">
+                        <img src="{%static 'img\news_icon.png' %}" alt="News">
                     </div>
                     <div class="nav-label">Новости</div>
-                </a>
                 </div>
             </div>
 
-            {% if user.is_authenticated %}
-            <div class="profile-box">
-                <img src="{% static 'img/default-avatar.png' %}" class="profile-avatar">
-                <div class="profile-username">{{ user.username }}</div>
-                <form method="post" action="{% url 'user_logout' %}">
-                    {% csrf_token %}
-                    <button type="submit">Выйти</button>
-                </form>
-            </div>
-            {% else %}
-            <button id="openAuth" class="login-btn">ВОЙТИ</button>
-            {% endif %}
+            <button class="login-btn">ВОЙТИ</button>
         </div>
 
         <!-- Main Content -->
@@ -1099,7 +1034,7 @@
             </div>
 
             <!-- Disciplines -->
-            <h2 class="section-title">Доступные дисциплины:</h2>
+            <h2 class="section-title">Выберите дисциплину:</h2>
             <div class="disciplines">
                 <div class="discipline-card">
                     <img src="{% static 'img\game-csgo.png' %}" alt="CS:GO">
@@ -1204,7 +1139,7 @@
                         <div class="footer-copyright">Copyright © 2020-2025</div>
                     </div>
                 </div>
-                
+
                 <div class="footer-links">
                     <a href="#" class="footer-link">Главная</a>
                     <a href="#" class="footer-link">Новости</a>
@@ -1248,7 +1183,7 @@
         }
 
         authModalClose.addEventListener('click', closeAuthModal);
-        
+
         authModal.addEventListener('click', (e) => {
             if (e.target === authModal) {
                 closeAuthModal();
@@ -1266,63 +1201,20 @@
             }
         });
 
-        // Tab switching - переключение между Логин и Номер телефона
-        const authInput = document.getElementById('authInput');
+        // Tab switching
         authTabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 authTabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-                
-                // Изменение placeholder в зависимости от выбранной вкладки
-                const tabType = tab.dataset.tab;
-                if (tabType === 'login') {
-                    authInput.placeholder = 'Логин';
-                    authInput.type = 'text';
-                } else if (tabType === 'phone') {
-                    authInput.placeholder = 'Номер телефона';
-                    authInput.type = 'tel';
-                }
             });
         });
 
-        const authTabsContainer = document.querySelector('.auth-tabs');
-
-        // Кнопка "Регистрация" - переключение на форму регистрации
-        if (switchToRegister) {
-            switchToRegister.addEventListener('click', () => {
-                authForm.style.display = 'none';
-                registerForm.style.display = 'flex';
-                authModalTitle.textContent = 'Регистрация';
-                authTabsContainer.style.display = 'none';
-                authError.classList.remove('active');
-            });
-        }
-
-        // Кнопка "Уже есть аккаунт? Войти" - переключение на форму входа
-        if (switchToLogin) {
-            switchToLogin.addEventListener('click', () => {
-                registerForm.style.display = 'none';
-                authForm.style.display = 'flex';
-                authModalTitle.textContent = 'Вход на CyberHero';
-                authTabsContainer.style.display = 'flex';
-                authError.classList.remove('active');
-            });
-        }
-
-        // Password toggle для формы регистрации
-        const registerPasswordToggle = document.getElementById('registerPasswordToggle');
-        const registerPassword = document.getElementById('registerPassword');
-        if (registerPasswordToggle) {
-            registerPasswordToggle.addEventListener('click', () => {
-                if (registerPassword.type === 'password') {
-                    registerPassword.type = 'text';
-                    registerPasswordToggle.textContent = '🔒';
-                } else {
-                    registerPassword.type = 'password';
-                    registerPasswordToggle.textContent = '👁';
-                }
-            });
-        }
+        // Form submit
+        authForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Вход выполнен успешно!');
+            closeAuthModal();
+        });
 
         // Burger menu functionality
         const burgerMenu = document.getElementById('burgerMenu');
@@ -1344,7 +1236,7 @@
             item.addEventListener('click', function() {
                 document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
                 this.classList.add('active');
-                
+
                 // Close menu on mobile after selection
                 if (window.innerWidth <= 768) {
                     toggleMenu();
@@ -1396,11 +1288,11 @@
         // Arrow navigation
         const leftArrow = document.querySelector('.carousel-arrow.left');
         const rightArrow = document.querySelector('.carousel-arrow.right');
-        
+
         leftArrow.addEventListener('click', () => {
             showSlide(currentSlide - 1);
         });
-        
+
         rightArrow.addEventListener('click', () => {
             showSlide(currentSlide + 1);
         });
@@ -1416,20 +1308,6 @@
         // setInterval(() => {
         //     showSlide(currentSlide + 1);
         // }, 5000);
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let cookie of cookies) {
-                    cookie = cookie.trim();
-                    if (cookie.startsWith(name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
     </script>
 </body>
 </html>

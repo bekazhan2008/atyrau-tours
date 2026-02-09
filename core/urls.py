@@ -18,19 +18,20 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from tournaments.views import home, tournaments_list, news_list
-from users.views import api_login, api_register, logout_view
+from tournaments.views import home, tournaments_list
+from users.views import api_login, register_view, user_logout
+from news.views import news
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home, name='home'),
+    path('', include('users.urls'), name='home'),
     path('tournaments/', tournaments_list, name='tournaments'),
-    path('news/', news_list, name='news'),
+    path('news/', news, name='news'),
     
     # API endpoints
     path('api/login/', api_login, name='api_login'),
-    path('api/register/', api_register, name='api_register'),
-    path('logout/', logout_view, name='logout'),
+    path("register/", register_view, name="register"),
+    path('logout/', user_logout, name='logout'),
     
     # Auth URLs
     path('auth/', include('users.urls')),

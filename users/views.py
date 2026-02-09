@@ -1,99 +1,136 @@
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
+from .forms import LoginForm, RegisterForm
+from .models import User
 import json
 from django.http import JsonResponse
-from django.contrib.auth import login, logout
-from django.views.decorators.http import require_http_methods
-from django.conf import settings
+from django.contrib import messages
 from django.core.mail import send_mail
-from django.urls import reverse
+from django.conf import settings
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.shortcuts import redirect
-from .models import User
-from .tokens import account_activation_token
+from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.auth.tokens import default_token_generator
 
 
-@require_http_methods(["POST"])
-def api_register(request):
-    try:
-        data = json.loads(request.body)
-        username = data.get('login')
-        email = data.get('email')
-        password = data.get('password')
+def home(request):
+    login_form = LoginForm()
+    return render(request, 'users/home.html', {'login_form': login_form})
+
+
+def register_view(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        username = request.POST.get("nickname")
+        password = request.POST.get("password")
+        password2 = request.POST.get("password2")
+
+        if password != password2:
+            messages.error(request, "Пароли не совпадают")
+            return redirect("home")
 
         if User.objects.filter(username=username).exists():
-            return JsonResponse({'success': False, 'message': 'Username already exists'}, status=400)
+            messages.error(request, "Такой логин уже существует")
+            return redirect("home")
 
         if User.objects.filter(email=email).exists():
-            return JsonResponse({'success': False, 'message': 'Email already exists'}, status=400)
+            messages.error(request, "Такая почта уже используется")
+            return redirect("home")
 
         user = User.objects.create_user(
             username=username,
             email=email,
             password=password,
-            is_active=False
+            is_active=False  # Пользователь не активен до подтверждения
         )
 
+        # Отправка письма с подтверждением
+        current_site = get_current_site(request)
+        token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        token = account_activation_token.make_token(user)
-
-        activation_link = request.build_absolute_uri(
-            reverse('activate', kwargs={'uidb64': uid, 'token': token})
-        )
+        link = f"http://{current_site.domain}/activate/{uid}/{token}/"
 
         send_mail(
-            'Подтверждение аккаунта',
-            f'Нажми на ссылку для активации:\n{activation_link}',
-            settings.DEFAULT_FROM_EMAIL,
-            [email],
+            subject="Подтверждение регистрации",
+            message=f"Привет {username}! Подтверди регистрацию по ссылке:\n{link}",
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[email],
             fail_silently=False,
         )
 
-        return JsonResponse({
-            'success': True,
-            'message': 'Check your email to activate account'
-        })
+        messages.success(request, "Письмо с подтверждением отправлено на вашу почту!")
+        return redirect("home")
 
-    except Exception as e:
-        return JsonResponse({'success': False, 'message': str(e)}, status=400)
+    return redirect("home")
 
 
 def activate(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
 
-        if account_activation_token.check_token(user, token):
-            user.is_active = True
-            user.save()
-            login(request, user)
-            return redirect('home')
-        else:
-            return JsonResponse({'success': False, 'message': 'Activation link invalid'})
-
-    except:
-        return JsonResponse({'success': False, 'message': 'Activation failed'})
-
-
-@require_http_methods(["POST"])
-def api_login(request):
-    from django.contrib.auth import authenticate
-
-    data = json.loads(request.body)
-    login_input = data.get('login')
-    password = data.get('password')
-
-    user = authenticate(request, username=login_input, password=password)
-
-    if user is not None:
-        if not user.is_active:
-            return JsonResponse({'success': False, 'message': 'Account not activated'}, status=403)
-
+    if user is not None and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.email_confirmed = True
+        user.save()
         login(request, user)
-        return JsonResponse({'success': True})
+        messages.success(request, "Почта подтверждена! Вы вошли в систему.")
+        return redirect("home")
+    else:
+        messages.error(request, "Ссылка недействительна или устарела.")
+        return redirect("home")
 
-    return JsonResponse({'success': False, 'message': 'Invalid credentials'}, status=401)
+
+def user_login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None:
+                login(request, user)
+                return redirect('home')
+            else:
+                form.add_error(None, 'Неверный логин или пароль')
+    else:
+        form = LoginForm()
+
+    return render(request, 'users/login.html', {'form': form})
+
+
+def user_logout(request):
+    logout(request)
+    return redirect('home')
+
+
+def api_login(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect("home")
+
+        return redirect("home")
 
 
 def logout_view(request):
+    """Logout user"""
     logout(request)
     return redirect('home')
+
+
+@login_required
+def profile(request):
+    """User profile page"""
+    return render(request, 'users/profile.html', {'user': request.user})

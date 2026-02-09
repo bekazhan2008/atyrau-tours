@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from .models import Tournament, PastTournament
 
 def home(request):
@@ -14,7 +13,7 @@ def home(request):
 
 def tournaments_list(request):
     active_tournament = Tournament.objects.filter(is_active=True).first()
-    tournaments = Tournament.objects.exclude(is_active=True).order_by('-start_date')
+    tournaments = Tournament.objects.filter(is_active=False).order_by('-start_date')
     past_tournaments = PastTournament.objects.all()
     
     # Filter by game if provided

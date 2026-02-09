@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThunderCup - Главная</title>
+    <title>ThunderCup - Новости</title>
     <style>
         * {
             margin: 0;
@@ -159,13 +159,12 @@
         }
 
         .nav-link {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
         }
-
 
         .nav-item.active .nav-label {
             color: #fff;
@@ -191,7 +190,6 @@
             transform: translateY(-2px);
         }
 
-
         .profile-avatar {
             width: 32px;
             height: 32px;
@@ -213,73 +211,216 @@
             max-width: 1200px;
         }
 
-        /* Carousel */
-        .carousel {
-            position: relative;
-            width: 100%;
-            margin: 0 auto 60px;
-            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-            border-radius: 16px;
-            height: 400px;
+        /* Page Header */
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .page-subtitle {
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 10px 20px;
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            color: #9ca3af;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab.active {
+            background: #06b6d4;
+            border-color: #06b6d4;
+            color: #fff;
+        }
+
+        .filter-tab:hover:not(.active) {
+            background: #374151;
+            color: #fff;
+        }
+
+        /* Featured News */
+        .featured-news {
+            background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .featured-badge {
+            display: inline-block;
+            background: #06b6d4;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+            width: fit-content;
+        }
+
+        .featured-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.3;
+            max-width: 600px;
+        }
+
+        .featured-description {
+            color: #9ca3af;
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 700px;
+        }
+
+        /* News Grid */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        /* News Card */
+        .news-card {
+            background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            border-color: #3b82f6;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+            position: relative;
             overflow: hidden;
         }
 
-        .carousel-slides {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .carousel-slide {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .carousel-slide.active {
-            opacity: 1;
-        }
-
-        .carousel-slide img {
+        .news-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .carousel-indicators {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+        .news-content {
+            padding: 20px;
+            flex: 1;
             display: flex;
-            gap: 8px;
-            z-index: 10;
+            flex-direction: column;
         }
 
-        .carousel-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
+        .news-category {
+            display: inline-block;
+            background: #06b6d4;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            width: fit-content;
+        }
+
+        .news-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            color: #fff;
+        }
+
+        .news-description {
+            color: #9ca3af;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            flex: 1;
+        }
+
+        .news-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 1px solid #374151;
+        }
+
+        .news-read-more {
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .news-read-more:hover {
+            color: #06b6d4;
+        }
+
+        /* Load More Button */
+        .load-more-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+
+        .load-more-btn {
+            padding: 15px 40px;
+            background: #06b6d4;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .carousel-indicator.active {
-            background: #fff;
-            width: 24px;
-            border-radius: 5px;
+        .load-more-btn:hover {
+            background: #0891b2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(6, 182, 212, 0.4);
         }
 
         /* Authorization Modal */
@@ -491,23 +632,24 @@
         .auth-captcha-text {
             color: #fff;
             font-size: 14px;
-            flex: 1;
+            cursor: pointer;
+            font-weight: 500;
         }
 
         .auth-captcha-info {
             color: #6b7280;
             font-size: 11px;
-            margin-top: 5px;
+            margin-top: 4px;
         }
 
         .auth-submit {
             width: 100%;
             padding: 15px;
-            background: #fff;
-            color: #0d1117;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: #fff;
             border: none;
             border-radius: 8px;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -516,8 +658,9 @@
         }
 
         .auth-submit:hover {
-            background: #e5e7eb;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
         }
 
         .auth-register-btn {
@@ -540,202 +683,14 @@
             border-color: #374151;
         }
 
-        @media (max-width: 768px) {
-            .carousel {
-                height: 200px;
-            }
-        }
-
-        .carousel-arrow {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 40px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-
-        .carousel-arrow:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .carousel-arrow.left {
-            left: 20px;
-        }
-
-        .carousel-arrow.right {
-            right: 20px;
-        }
-
-        /* Disciplines */
-        .section-title {
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-            color: #9ca3af;
-        }
-
-        .disciplines {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 60px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-        }
-
-        .discipline-card {
-            min-width: 100px;
-            width: 100px;
-            height: 140px;
-            background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
-            border-radius: 12px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            border: 2px transparent solid;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .discipline-card:hover {
-            border-color: #3b82f6;
-        }
-
-        .discipline-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .discipline-badge {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            width: 30px;
-            height: 30px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-            padding: 4px;
-        }
-
-        .discipline-badge img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        /* Tournaments */
-        .tournaments {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-            width: 100%;
-        }
-
-        @media (max-width: 768px) {
-            .tournaments {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .tournament-card {
-            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-            border-radius: 12px;
-            padding: 20px;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            transition: all 0.3s ease;
-            border: 1px solid #374151;
-        }
-
-        .tournament-card:hover {
-            border-color: #3b82f6;
-        }
-
-        .tournament-image {
-            width: 80px;
-            height: 80px;
-            background: #374151;
-            border-radius: 8px;
-        }
-
-        .tournament-info {
-            flex: 1;
-        }
-
-        .tournament-progress {
-            width: 100%;
-            height: 6px;
-            background: #374151;
-            border-radius: 3px;
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
-
-        .tournament-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
-            width: 60%;
-            border-radius: 3px;
-        }
-
-        .tournament-price {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        .tournament-register {
-            padding: 8px 20px;
-            background: #fff;
-            color: #0d1117;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-        }
-
-        .tournament-register:hover {
-            background: #e5e7eb;
-            transform: translateY(-2px);
-        }
-
         /* Footer */
         .footer {
-            margin-top: 80px;
+            margin-top: auto;
             padding-top: 40px;
             border-top: 1px solid #1f2937;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-
-        @media (max-width: 768px) {
-            .footer {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
-            }
-            
-            .footer-links {
-                align-items: center !important;
-            }
+            align-items: flex-start;
         }
 
         .footer-logo {
@@ -840,39 +795,22 @@
                 padding: 80px 20px 20px;
             }
 
-            .carousel {
-                height: 200px;
-                border-radius: 12px;
-                margin-bottom: 40px;
+            .page-title {
+                font-size: 24px;
             }
 
-            .carousel-arrow {
-                padding: 10px;
-                font-size: 30px;
+            .featured-news {
+                padding: 20px;
+                min-height: 200px;
             }
 
-            .carousel-arrow.left {
-                left: 10px;
+            .featured-title {
+                font-size: 20px;
             }
 
-            .carousel-arrow.right {
-                right: 10px;
-            }
-
-            .disciplines {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-                margin-bottom: 40px;
-            }
-
-            .tournaments {
+            .news-grid {
                 grid-template-columns: 1fr;
-                gap: 15px;
-                margin-bottom: 40px;
-            }
-
-            .tournament-image {
-                height: 150px;
+                gap: 20px;
             }
 
             .footer {
@@ -882,8 +820,15 @@
             }
 
             .footer-links {
-                flex-direction: column;
+                align-items: center;
                 gap: 15px;
+            }
+        }
+
+        /* Tablet */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .news-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
@@ -893,33 +838,16 @@
                 padding: 70px 15px 15px;
             }
 
-            .section-title {
-                font-size: 12px;
-                margin-bottom: 15px;
-            }
-
-            .disciplines {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-            }
-
-            .discipline-badge {
-                width: 30px;
-                height: 30px;
-                bottom: 8px;
-                right: 8px;
-            }
-
-            .tournament-price {
+            .page-title {
                 font-size: 20px;
             }
 
-            .carousel {
-                height: 180px;
+            .featured-title {
+                font-size: 18px;
             }
 
-            .footer-brand {
-                font-size: 16px;
+            .featured-description {
+                font-size: 14px;
             }
 
             .auth-modal-content {
@@ -929,10 +857,6 @@
 
             .auth-modal-title {
                 font-size: 20px;
-            }
-
-            .auth-social-buttons {
-                grid-template-columns: repeat(4, 1fr);
             }
         }
     </style>
@@ -1022,6 +946,7 @@
                 </form>
             </div>
         </div>
+
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
         <a href="{% url 'home' %}">
@@ -1031,7 +956,7 @@
         </a>
             
             <div class="nav-items">
-                <div class="nav-item active">
+                <div class="nav-item">
                 <a href="{% url 'home' %}" class="nav-link">
                     <div class="nav-icon">
                         <img src="{% static 'img/home_icon.png' %}" alt="Home">
@@ -1049,10 +974,10 @@
                 </a>
                 </div>
                 
-                <div class="nav-item">
+                <div class="nav-item active">
                 <a href="{% url 'news' %}" class="nav-link">
                     <div class="nav-icon">
-                        <img src="{%static 'img/news_icon.png' %}" alt="News">
+                        <img src="{% static 'img/news_icon.png' %}" alt="News">
                     </div>
                     <div class="nav-label">Новости</div>
                 </a>
@@ -1076,142 +1001,150 @@
         <!-- Main Content -->
         <div class="main-content">
             <div class="content-wrapper">
-            <!-- Carousel -->
-            <div class="carousel">
-                <div class="carousel-slides">
-                    <div class="carousel-slide active">
-                        <img src="{% static 'img/dota-banner.webp' %}" alt="Slide 1">
-                    </div>
-                    <div class="carousel-slide">
-                        <img src="{% static 'img/cs2-banner.png' %}" alt="Slide 2">
-                    </div>
-                    <div class="carousel-slide">
-                        <img src="{% static 'img/valo--banner.png' %}" alt="Slide 3">
-                    </div>
-                </div>
-                <button class="carousel-arrow left">‹</button>
-                <button class="carousel-arrow right">›</button>
-                <div class="carousel-indicators">
-                    <div class="carousel-indicator active" data-slide="0"></div>
-                    <div class="carousel-indicator" data-slide="1"></div>
-                    <div class="carousel-indicator" data-slide="2"></div>
-                </div>
-            </div>
-
-            <!-- Disciplines -->
-            <h2 class="section-title">Доступные дисциплины:</h2>
-            <div class="disciplines">
-                <div class="discipline-card">
-                    <img src="{% static 'img\game-csgo.png' %}" alt="CS:GO">
-                    <div class="discipline-badge">
-                        <img src="{% static 'img\logo-csgo.png' %}" alt="CS:GO Logo">
-                    </div>
-                </div>
-                <div class="discipline-card">
-                    <img src="{% static 'img\game-juggernaut.png' %}" alt="Dota 2">
-                    <div class="discipline-badge">
-                        <img src="{% static 'img\logo-dota2.png' %}" alt="Dota 2 Logo">
-                    </div>
-                </div>
-                <div class="discipline-card">
-                    <img src="{% static 'img\game-phantom.png' %}" alt="Valorant">
-                    <div class="discipline-badge">
-                        <img src="{% static 'img\logo-valorant.png' %}" alt="Valorant Logo">
-                    </div>
-                </div>
-                <div class="discipline-card">
-                    <img src="{% static 'img\game-pubg.png' %}" alt="PUBG">
-                    <div class="discipline-badge">
-                        <img src="{% static 'img\logo-pubg.png' %}" alt="PUBG Logo">
-                    </div>
-                </div>
-                <div class="discipline-card">
-                    <img src="{% static 'img\game-clash.png' %}" alt="Clash Royale">
-                    <div class="discipline-badge">
-                        <img src="{% static 'img\logo-clash.png' %}" alt="Clash Royale Logo">
-                    </div>
-                </div>
-                <div class="discipline-card">
-                    <img src="{% static 'img\game-brawl.png' %}" alt="Brawl Stars">
-                    <div class="discipline-badge">
-                        <img src="{% static 'img\logo-brawl.png' %}" alt="Brawl Stars Logo">
-                    </div>
-                </div>
-                <div class="discipline-card">
-                    <img src="{% static 'img\game-standoff.png' %}" alt="Standoff 2">
-                    <div class="discipline-badge">
-                        <img src="{% static 'img\logo-standoff.png' %}" alt="Standoff 2 Logo">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tournaments -->
-            <h2 class="section-title">Турниры</h2>
-            <div class="tournaments">
-                <div class="tournament-card">
-                    <div class="tournament-image"></div>
-                    <div class="tournament-info">
-                        <div class="tournament-progress">
-                            <div class="tournament-progress-bar"></div>
-                        </div>
-                        <div class="tournament-price">1700 ₽</div>
-                        <button class="tournament-register">Регистрация</button>
-                    </div>
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1 class="page-title">Новости</h1>
+                    <p class="page-subtitle">Последние обновления в мире киберспорта</p>
                 </div>
 
-                <div class="tournament-card">
-                    <div class="tournament-image"></div>
-                    <div class="tournament-info">
-                        <div class="tournament-progress">
-                            <div class="tournament-progress-bar"></div>
-                        </div>
-                        <div class="tournament-price">1700 ₽</div>
-                        <button class="tournament-register">Регистрация</button>
-                    </div>
+                <!-- Filter Tabs -->
+                <div class="filter-tabs">
+                    <div class="filter-tab active">Все новости</div>
+                    <div class="filter-tab">Турниры</div>
+                    <div class="filter-tab">Команды</div>
+                    <div class="filter-tab">Обновления</div>
+                    <div class="filter-tab">Патчи</div>
                 </div>
 
-                <div class="tournament-card">
-                    <div class="tournament-image"></div>
-                    <div class="tournament-info">
-                        <div class="tournament-progress">
-                            <div class="tournament-progress-bar"></div>
-                        </div>
-                        <div class="tournament-price">1700 ₽</div>
-                        <button class="tournament-register">Регистрация</button>
-                    </div>
-                </div>
-
-                <div class="tournament-card">
-                    <div class="tournament-image"></div>
-                    <div class="tournament-info">
-                        <div class="tournament-progress">
-                            <div class="tournament-progress-bar"></div>
-                        </div>
-                        <div class="tournament-price">1700 ₽</div>
-                        <button class="tournament-register">Регистрация</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="footer">
-                <div class="footer-logo">
-                    <div class="footer-logo-icon">
-                        <img src="{% static 'img/thunder.png' %}" alt="ThunderCup">
-                    </div>
+                <!-- Featured News -->
+                <div class="featured-news">
                     <div>
-                        <div class="footer-brand">ThunderCup</div>
-                        <div class="footer-copyright">Copyright © 2020-2025</div>
+                        <div class="featured-badge">Главная новость</div>
+                        <h2 class="featured-title">Стартовал новый сезон ThunderCup Championship 2025</h2>
+                    </div>
+                    <p class="featured-description">
+                        Приглашаем всех участников на грандиозный турнир по Dota 2 с призовым фондом 500,000 рублей. 
+                        Регистрация команд открыта до 15 марта. Не упустите свой шанс стать чемпионом!
+                    </p>
+                </div>
+
+                <!-- News Grid -->
+                <div class="news-grid">
+                    <div class="news-card">
+                        <div class="news-image"></div>
+                        <div class="news-content">
+                            <div class="news-category">Турниры</div>
+                            <h3 class="news-title">Финал CS:GO Tournament завершился победой Team Spirit</h3>
+                            <p class="news-description">
+                                В напряженной борьбе Team Spirit одержала победу над NAVI со счетом 2:1. 
+                                Лучшим игроком турнира признан donk.
+                            </p>
+                            <div class="news-footer">
+                                <a href="#" class="news-read-more">Читать далее</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="news-card">
+                        <div class="news-image"></div>
+                        <div class="news-content">
+                            <div class="news-category">Обновления</div>
+                            <h3 class="news-title">Новый патч 7.35 для Dota 2: все изменения</h3>
+                            <p class="news-description">
+                                Valve выпустила масштабное обновление баланса, которое изменит мету перед 
+                                международным турниром.
+                            </p>
+                            <div class="news-footer">
+                                <a href="#" class="news-read-more">Читать далее</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="news-card">
+                        <div class="news-image"></div>
+                        <div class="news-content">
+                            <div class="news-category">Команды</div>
+                            <h3 class="news-title">OG объявила новый состав на сезон 2025</h3>
+                            <p class="news-description">
+                                Легендарная организация OG представила обновленный состав с тремя новыми 
+                                игроками из СНГ региона.
+                            </p>
+                            <div class="news-footer">
+                                <a href="#" class="news-read-more">Читать далее</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="news-card">
+                        <div class="news-image"></div>
+                        <div class="news-content">
+                            <div class="news-category">Турниры</div>
+                            <h3 class="news-title">Открыта регистрация на PUBG Mobile Championship</h3>
+                            <p class="news-description">
+                                Призовой фонд турнира составляет 200,000 рублей. Регистрация команд 
+                                продлится до конца месяца.
+                            </p>
+                            <div class="news-footer">
+                                <a href="#" class="news-read-more">Читать далее</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="news-card">
+                        <div class="news-image"></div>
+                        <div class="news-content">
+                            <div class="news-category">Патчи</div>
+                            <h3 class="news-title">Valorant Episode 8 Act 2: новый агент и карта</h3>
+                            <p class="news-description">
+                                Riot Games анонсировала нового агента с уникальными способностями и 
+                                совершенно новую карту для соревновательного режима.
+                            </p>
+                            <div class="news-footer">
+                                <a href="#" class="news-read-more">Читать далее</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="news-card">
+                        <div class="news-image"></div>
+                        <div class="news-content">
+                            <div class="news-category">Команды</div>
+                            <h3 class="news-title">Состав NAVI пополнился новым снайпером</h3>
+                            <p class="news-description">
+                                Клуб Natus Vincere подписал контракт с молодым талантом из российской 
+                                сцены на позицию AWPer.
+                            </p>
+                            <div class="news-footer">
+                                <a href="#" class="news-read-more">Читать далее</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="footer-links">
-                    <a href="#" class="footer-link">Главная</a>
-                    <a href="#" class="footer-link">Новости</a>
-                    <a href="#" class="footer-link">Турниры</a>
-                    <a href="#" class="footer-link">Помощь</a>
+
+                <!-- Load More Button -->
+                <div class="load-more-container">
+                    <button class="load-more-btn">Загрузить ещё</button>
                 </div>
-            </div>
+
+                <!-- Footer -->
+                <div class="footer">
+                    <div class="footer-logo">
+                        <div class="footer-logo-icon">
+                            <img src="../../../static/img/thunder.png" alt="ThunderCup">
+                        </div>
+                        <div>
+                            <div class="footer-brand">ThunderCup</div>
+                            <div class="footer-copyright">Copyright © 2020-2025</div>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Главная</a>
+                        <a href="#" class="footer-link">Новости</a>
+                        <a href="#" class="footer-link">Турниры</a>
+                        <a href="#" class="footer-link">Помощь</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1352,70 +1285,19 @@
             });
         });
 
-        // Add interactivity
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        // Filter tabs functionality
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
             });
         });
 
-        // Carousel functionality
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.carousel-slide');
-        const indicators = document.querySelectorAll('.carousel-indicator');
-        const totalSlides = slides.length;
-
-        function showSlide(index) {
-            // Wrap around
-            if (index >= totalSlides) {
-                currentSlide = 0;
-            } else if (index < 0) {
-                currentSlide = totalSlides - 1;
-            } else {
-                currentSlide = index;
-            }
-
-            // Update slides
-            slides.forEach((slide, i) => {
-                slide.classList.remove('active');
-                if (i === currentSlide) {
-                    slide.classList.add('active');
-                }
-            });
-
-            // Update indicators
-            indicators.forEach((indicator, i) => {
-                indicator.classList.remove('active');
-                if (i === currentSlide) {
-                    indicator.classList.add('active');
-                }
-            });
-        }
-
-        // Arrow navigation
-        const leftArrow = document.querySelector('.carousel-arrow.left');
-        const rightArrow = document.querySelector('.carousel-arrow.right');
-        
-        leftArrow.addEventListener('click', () => {
-            showSlide(currentSlide - 1);
-        });
-        
-        rightArrow.addEventListener('click', () => {
-            showSlide(currentSlide + 1);
+        // Load more button
+        document.querySelector('.load-more-btn').addEventListener('click', () => {
+            alert('Загружаем больше новостей...');
         });
 
-        // Indicator navigation
-        indicators.forEach((indicator, index) => {
-            indicator.addEventListener('click', () => {
-                showSlide(index);
-            });
-        });
-
-        // Auto-play (optional - uncomment to enable)
-        // setInterval(() => {
-        //     showSlide(currentSlide + 1);
-        // }, 5000);
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
