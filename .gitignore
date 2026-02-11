@@ -1,3 +1,6 @@
+# Visual Studio
+.vs/
+
 # Python cache
 __pycache__/
 *.pyc
