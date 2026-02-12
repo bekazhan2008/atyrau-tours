@@ -196,6 +196,12 @@
             border-radius: 50%;
         }
 
+        .profile-username {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-left: 1px;
+        }
+
         /* Main Content */
         .main-content {
             flex: 1;
@@ -1136,12 +1142,10 @@
 
             {% if user.is_authenticated %}
             <div class="profile-box">
+            <a href="{% url 'profile' %}">
                 <img src="{% static 'img/default-avatar.png' %}" class="profile-avatar">
+            </a>
                 <div class="profile-username">{{ user.username }}</div>
-                <form method="post" action="{% url 'user_logout' %}">
-                    {% csrf_token %}
-                    <button type="submit">Выйти</button>
-                </form>
             </div>
             {% else %}
             <button id="openAuth" class="login-btn">ВОЙТИ</button>
@@ -1162,7 +1166,7 @@
                     <h3 style="padding-bottom: 5px; ">Все игры</h3>
                 </div>
                 <div class="game-icon" data-game="csgo">
-                    <img src="{% static 'img/logo-csgo.png' %}">
+                    <img src="{% static 'img/logo-csgo.png' %}" style="border-radius: 5px;">
                 </div>
                 <div class="game-icon" data-game="dota2">
                     <img src="{% static 'img/logo-dota2.png' %}">

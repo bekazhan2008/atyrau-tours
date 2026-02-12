@@ -4,14 +4,16 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from .forms import LoginForm, RegisterForm
 from .models import User
+from tournaments.models import Tournament, PastTournament
 import json
 from django.http import JsonResponse
 from django.contrib import messages
 
 
 def home(request):
+    tournaments = Tournament.objects.all() 
     login_form = LoginForm()
-    return render(request, 'users/home.html', {'login_form': login_form})
+    return render(request, 'users/home.html', {'login_form': login_form, 'tournaments': tournaments})
 
 def register_view(request):
     if request.method == "POST":
