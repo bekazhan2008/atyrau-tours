@@ -99,6 +99,8 @@
         /* User Info Card (Left) */
         .user-card-content {
             display: flex;
+            align-items: center;
+            width: 100%;
             gap: 15px;
         }
         
@@ -112,6 +114,7 @@
 
         .user-actions {
             display: flex;
+            margin-left: auto;
             flex-direction: column;
             gap: 10px;
         }
@@ -133,9 +136,10 @@
         
         .action-btn:hover { background: #374151; }
         
-        .action-btn.logout {
-            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
-            border: none;
+        .btn-img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
         }
 
         .user-info-text {
@@ -271,6 +275,26 @@
             height: 40px;
             background: #374151; /* Match row color */
             border-radius: 6px;
+        }
+
+        .copy-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px); /* Спрятано внизу */
+            background-color: #10b981; /* Зеленый цвет успеха */
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: transform 0.3s ease-out;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Класс, который JS добавит для показа */
+        .copy-toast.show {
+            transform: translateX(-50%) translateY(0);
         }
 
         /* --- AUTH & FOOTER STYLES (Keep existing) --- */
@@ -424,9 +448,13 @@
                             </div>
                             
                             <div class="user-actions">
-                                <button class="action-btn" title="Settings">⚙️</button>
-                                <button class="action-btn" title="Share">🔗</button>
-                                <button class="action-btn" title="Logout">🚪</button>
+                                <button class="action-btn" title="Settings"><img src="{% static 'img/settings.png' %}" alt="" class="btn-img"></button>
+                                <button class="action-btn" title="Share" onclick="copyUrl()"><img src="{% static 'img/link.png' %}" alt="" class="btn-img"></button>
+                                <form method="post" action="{% url 'user_logout' %}">
+                                    {% csrf_token %}
+                                    <button class="action-btn" title="Logout" type="submit"><img src="{% static 'img/logout.png' %}" alt="" class="btn-img"></button>
+                                </form>
+                                <div id="copy-toast" class="copy-toast">Ссылка скопирована!</div>
                             </div>
                         </div>
                     </div>
@@ -482,7 +510,23 @@
 
     <script>
         // --- Keep Original Script Logic ---
-        
+        function copyUrl() {
+            // Копируем текущий URL
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                const toast = document.getElementById('copy-toast');
+                
+                // Показываем уведомление
+                toast.classList.add('show');
+                
+                // Прячем через 2.5 секунды
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2500);
+            }).catch(err => {
+                console.error('Не удалось скопировать:', err);
+            });
+        }
+
         // Modal & Auth Logic
         const authModal = document.getElementById('authModal');
         const authModalClose = document.getElementById('authModalClose');

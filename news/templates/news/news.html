@@ -255,10 +255,15 @@
             transition: all 0.3s ease;
         }
 
+        .news-card {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Стиль для активной кнопки (если еще нет) */
         .filter-tab.active {
-            background: #06b6d4;
-            border-color: #06b6d4;
-            color: #fff;
+            background-color: #3b82f6; /* Например, синий */
+            color: white;
+            border-radius: 8px;
         }
 
         .filter-tab:hover:not(.active) {
@@ -268,14 +273,39 @@
 
         /* Featured News */
         .featured-news {
-            background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 40px;
-            min-height: 250px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+        /* Добавляем настройки фона */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        
+        /* Оставляем ваши стили */
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 40px;
+        min-height: 350px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        
+        /* Важно: создаем позиционирование для оверлея, если решим делать его через :before */
+        position: relative;
+        overflow: hidden; /* Чтобы картинка не вылезала за скругления */
+        }
+
+        /* Создаем темный слой поверх картинки, но под текстом */
+        .featured-news::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, rgba(31, 41, 55, 0.4) 0%, rgba(17, 24, 39, 0.8) 100%);
+            z-index: 1;
+        }
+
+        /* Поднимаем контент выше темного слоя */
+        .featured-news > div, 
+        .featured-news > p {
+            position: relative;
+            z-index: 2;
         }
 
         .featured-badge {
@@ -1013,30 +1043,37 @@
 
                 <!-- Filter Tabs -->
                 <div class="filter-tabs">
-                    <div class="filter-tab active">Все новости</div>
-                    <div class="filter-tab">Турниры</div>
-                    <div class="filter-tab">Команды</div>
-                    <div class="filter-tab">Обновления</div>
-                    <div class="filter-tab">Патчи</div>
+                    <div class="filter-tab active" data-type="all">Все новости</div>
+                    <div class="filter-tab" data-type="tournaments">Турниры</div>
+                    <div class="filter-tab" data-type="teams">Команды</div>
+                    <div class="filter-tab" data-type="updates">Обновления</div>
+                    <div class="filter-tab" data-type="patches">Патчи</div>
                 </div>
 
                 <!-- Featured News -->
-                <div class="featured-news">
+                <div class="featured-news" style="background-image: url('{{ main_news.img.url }}');">
+                {% if main_news %}
                     <div>
                         <div class="featured-badge">Главная новость</div>
-                        <h2 class="featured-title">Стартовал новый сезон ThunderCup Championship 2025</h2>
+                        <h2 class="featured-title" style="color: white;">{{ main_news.title }}</h2>
                     </div>
-                    <p class="featured-description">
-                        Приглашаем всех участников на грандиозный турнир по Dota 2 с призовым фондом 500,000 рублей. 
-                        Регистрация команд открыта до 15 марта. Не упустите свой шанс стать чемпионом!
+                    <p class="featured-description" style="color: rgba(255,255,255,0.9);">
+                        {{ main_news.text }}
                     </p>
+                {% endif %}
                 </div>
                 
                 <!-- News Grid -->
                 <div class="news-grid">
                     {% for news in news %}
-                    <div class="news-card">
-                        <div class="news-image"><img src="{{ news.img }}" alt=""></div>
+                    <div class="news-card" data-type="{{ news.type }}">
+                        <div class="news-image">
+                        {% if news.img %}
+                            <img src="{{ news.img.url }}" alt="{{ news.title }}">
+                        {% else %}
+                            <img src="{% static 'img/no-photo.png' %}" alt="Нет фото">
+                        {% endif %}
+                        </div>
                         <div class="news-content">
                             <div class="news-category">{{ news.get_type_display }}</div>
                             <h3 class="news-title">{{ news.title }}</h3>
@@ -1046,12 +1083,14 @@
                             </div>
                         </div>
                     </div>
+                    {% empty %}
+                    <p>Новостей пока нет. Следите за обновлениями!</p>
                     {% endfor %}
                 </div>
                 <!-- Load More Button -->
-                <div class="load-more-container">
+                <!-- <div class="load-more-container">
                     <button class="load-more-btn">Загрузить ещё</button>
-                </div>
+                </div> -->
 
                 <!-- Footer -->
                 <div class="footer">
@@ -1077,6 +1116,35 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.filter-tab');
+            const cards = document.querySelectorAll('.news-card');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 1. Меняем активную вкладку
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    const filterType = tab.getAttribute('data-type');
+
+                    // 2. Фильтруем карточки
+                    cards.forEach(card => {
+                        const cardType = card.getAttribute('data-type');
+
+                        if (filterType === 'all' || cardType === filterType) {
+                            card.style.display = 'flex'; // Показываем
+                            // Добавим небольшую анимацию появления
+                            card.style.opacity = '0';
+                            setTimeout(() => card.style.opacity = '1', 10);
+                        } else {
+                            card.style.display = 'none'; // Скрываем
+                        }
+                    });
+                });
+            });
+        });
+
         // Authorization Modal
         const authModal = document.getElementById('authModal');
         const authModalClose = document.getElementById('authModalClose');
