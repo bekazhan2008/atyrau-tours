@@ -64,7 +64,7 @@
         }
         .login-btn:hover { background: #e5e7eb; transform: translateY(-2px); }
         .profile-avatar { width: 32px; height: 32px; border-radius: 50%; }
-        .profile-username { font-size: 14px; color: #9ca3af; margin-left: 1px; }
+        .profile-username { font-size: 14px; color: #9ca3af; }
 
         /* --- MAIN CONTENT & PROFILE STYLES (NEW) --- */
         .main-content {
@@ -74,6 +74,15 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+
+        .profile-box {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
         }
 
         .content-wrapper {
@@ -253,6 +262,13 @@
             font-size: 12px;
         }
 
+        .user-avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
         /* Matches List Section */
         .matches-section {
             width: 100%;
@@ -295,6 +311,24 @@
         /* Класс, который JS добавит для показа */
         .copy-toast.show {
             transform: translateX(-50%) translateY(0);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #2a2d34; /* Твой темный стиль */
+            padding: 20px;
+            border-radius: 12px;
+            width: 400px;
+            color: white;
         }
 
         /* --- AUTH & FOOTER STYLES (Keep existing) --- */
@@ -422,7 +456,17 @@
             {% if user.is_authenticated %}
             <div class="profile-box">
                 <a href="{% url 'profile' %}">
-                    <img src="{% static 'img/default-avatar.png' %}" class="profile-avatar">
+                    {% if user.avatar %}
+                        {# Если аватарка загружена #}
+                        <img src="{{ user.avatar.url }}" 
+                            class="profile-avatar" 
+                            alt="{{ user.username }}">
+                    {% else %}
+                        {# Если аватарки нет, показываем стандартную из static #}
+                        <img src="{% static 'img/default-avatar.png' %}" 
+                            class="profile-avatar" 
+                            alt="Default">
+                    {% endif %}
                 </a>
                 <div class="profile-username">{{ user.username }}</div>
             </div>
@@ -439,7 +483,17 @@
                         <div class="user-card-content">
                             <div>
                                 <div class="user-avatar-large">
-                                    <img src="{% static 'img/default-avatar.png' %}" style="width:100%; height:100%; object-fit: cover; border-radius: 8px; opacity: 0.5;" alt="">
+                                    {% if user.avatar %}
+                                        {# Если аватарка загружена #}
+                                        <img src="{{ user.avatar.url }}" 
+                                            class="user-avatar" 
+                                            alt="{{ user.username }}">
+                                    {% else %}
+                                        {# Если аватарки нет, показываем стандартную из static #}
+                                        <img src="{% static 'img/default-avatar.png' %}" 
+                                            class="profile-avatar" 
+                                            alt="Default">
+                                    {% endif %}
                                 </div>
                                 <div class="user-info-text">
                                     <div class="info-pill">{{ user.username }}</div>
@@ -448,7 +502,31 @@
                             </div>
                             
                             <div class="user-actions">
-                                <button class="action-btn" title="Settings"><img src="{% static 'img/settings.png' %}" alt="" class="btn-img"></button>
+                                <button class="action-btn" onclick="openModal()" title="Settings"><img src="{% static 'img/settings.png' %}" alt="" class="btn-img"></button>
+                                <div id="settingsModal" class="modal-overlay" style="display:none;">
+                                    <div class="modal-content">
+                                        <span class="close-btn" onclick="closeModal()">&times;</span>
+                                        <h2>Настройки профиля</h2>
+                                        
+                                        <form method="post" enctype="multipart/form-data" action="{% url 'update_profile' %}">
+                                            {% csrf_token %}
+                                            
+                                            <label>Сменить аватар:</label>
+                                            <input type="file" name="avatar" accept="image/*">
+                                            
+                                            <label>Никнейм:</label>
+                                            <input type="text" name="username" value="{{ user.username }}">
+                                            
+                                            <label>Почта:</label>
+                                            <input type="email" name="email" value="{{ user.email }}">
+                                            
+                                            <button type="submit" class="save-btn">Сохранить изменения</button>
+                                        </form>
+                                        
+                                        <hr>
+                                        <button class="verify-btn">Подтвердить почту</button>
+                                    </div>
+                                </div>
                                 <button class="action-btn" title="Share" onclick="copyUrl()"><img src="{% static 'img/link.png' %}" alt="" class="btn-img"></button>
                                 <form method="post" action="{% url 'user_logout' %}">
                                     {% csrf_token %}
@@ -510,6 +588,23 @@
 
     <script>
         // --- Keep Original Script Logic ---
+        function openModal() {
+            document.getElementById("settingsModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("settingsModal").style.display = "none";
+        }
+
+        // Закрытие при клике вне окна
+        window.onclick = function(event) {
+            let modal = document.getElementById("settingsModal");
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+
         function copyUrl() {
             // Копируем текущий URL
             navigator.clipboard.writeText(window.location.href).then(() => {

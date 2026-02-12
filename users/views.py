@@ -87,3 +87,17 @@ def logout_view(request):
 def profile(request):
     """User profile page"""
     return render(request, 'users/profile.html', {'user': request.user})
+
+@login_required
+def update_profile(request):
+    if request.method == 'POST':
+        user = request.user
+        # Обновляем ник
+        user.username = request.POST.get('username')
+        
+        # Обработка аватарки
+        if 'avatar' in request.FILES:
+            user.avatar = request.FILES['avatar']
+            
+        user.save()
+    return redirect('profile')

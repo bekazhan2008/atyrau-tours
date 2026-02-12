@@ -710,6 +710,15 @@
             gap: 4px;
         }
 
+        .profile-box {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
         .tournament-name {
             margin-top: 4px;
             font-size: 16px;
@@ -1102,7 +1111,17 @@
             {% if user.is_authenticated %}
             <div class="profile-box">
             <a href="{% url 'profile' %}">
-                <img src="{% static 'img/default-avatar.png' %}" class="profile-avatar">
+                {% if user.avatar %}
+                    {# Если аватарка загружена #}
+                    <img src="{{ user.avatar.url }}" 
+                        class="profile-avatar" 
+                        alt="{{ user.username }}">
+                {% else %}
+                    {# Если аватарки нет, показываем стандартную из static #}
+                    <img src="{% static 'img/default-avatar.png' %}" 
+                        class="profile-avatar" 
+                        alt="Default">
+                {% endif %}
             </a>
                 <div class="profile-username">{{ user.username }}</div>
             </div>
