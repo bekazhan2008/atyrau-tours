@@ -13,6 +13,7 @@ class User(AbstractUser):
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     phone = models.CharField(max_length=20, blank=True, unique=True, null=True)
     email = models.EmailField(unique=True, null=True, blank=True)
+    is_email_verified = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username
