@@ -101,6 +101,7 @@ EMAIL_USE_TLS = True
 
 EMAIL_HOST_USER = 'maksivan979@gmail.com'
 EMAIL_HOST_PASSWORD = 'ypjv chsc zwxl pjca'
+DEFAULT_FROM_EMAIL = 'Thunder Cup <maksivan979@gmail.com>'
 
 
 # Password validation
