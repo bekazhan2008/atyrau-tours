@@ -14,10 +14,15 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
 
 
 def home(request):
-    tournaments = Tournament.objects.all() 
+    tournaments = Tournament.objects.all()
     login_form = LoginForm()
     return render(request, 'users/home.html', {'login_form': login_form, 'tournaments': tournaments})
 
