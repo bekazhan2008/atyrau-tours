@@ -1,7 +1,14 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 
 User = get_user_model()
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = User # Или твоя модель Profile
+        fields = ['username', 'email'] # Аватарку добавь, если она в Profile
 
 
 class LoginForm(forms.Form):

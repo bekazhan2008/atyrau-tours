@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from .forms import LoginForm, RegisterForm
 from .models import User
+from tournaments.models import Tournament, PastTournament
 import json
 from django.http import JsonResponse
 from django.contrib import messages
@@ -16,8 +17,9 @@ from django.contrib.auth.tokens import default_token_generator
 
 
 def home(request):
+    tournaments = Tournament.objects.all() 
     login_form = LoginForm()
-    return render(request, 'users/home.html', {'login_form': login_form})
+    return render(request, 'users/home.html', {'login_form': login_form, 'tournaments': tournaments})
 
 
 def register_view(request):
@@ -134,3 +136,17 @@ def logout_view(request):
 def profile(request):
     """User profile page"""
     return render(request, 'users/profile.html', {'user': request.user})
+
+@login_required
+def update_profile(request):
+    if request.method == 'POST':
+        user = request.user
+        # Обновляем ник
+        user.username = request.POST.get('username')
+        
+        # Обработка аватарки
+        if 'avatar' in request.FILES:
+            user.avatar = request.FILES['avatar']
+            
+        user.save()
+    return redirect('profile')

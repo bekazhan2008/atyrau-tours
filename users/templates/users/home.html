@@ -198,6 +198,12 @@
             border-radius: 50%;
         }
 
+        .profile-username {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-left: 1px;
+        }
+
         /* Main Content */
         .main-content {
             flex: 1;
@@ -211,6 +217,31 @@
         .content-wrapper {
             width: 100%;
             max-width: 1200px;
+        }
+
+        /* Load More Button */
+        .load-more-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+
+        .load-more-btn {
+            padding: 15px 40px;
+            background: #249ae9;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .load-more-btn:hover {
+            background: #00E5B0;
         }
 
         /* Carousel */
@@ -606,7 +637,7 @@
         }
 
         .discipline-card:hover {
-            border-color: #3b82f6;
+            border-color: #00E5B0;
         }
 
         .discipline-card img {
@@ -652,43 +683,61 @@
         .tournament-card {
             background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
             border-radius: 12px;
-            padding: 20px;
+            padding: 3px;
             display: flex;
             gap: 20px;
             align-items: center;
             transition: all 0.3s ease;
-            border: 1px solid #374151;
+            border: 2px solid #374151;
         }
 
-        .tournament-card:hover {
-            border-color: #3b82f6;
-        }
+            .tournament-card:hover {
+                border-color: #00E5B0;
+            }
 
         .tournament-image {
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
+            margin-left: 10px;
             background: #374151;
             border-radius: 8px;
         }
 
+        .tournament-left-block {
+            display: flex;
+            margin-top: 4px;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .profile-box {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .tournament-name {
+            margin-top: 4px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .tournament-region {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .tournament-right-block {
+            margin-left: auto;
+            margin-right: 15px;
+            display: flex;
+        }
+
         .tournament-info {
             flex: 1;
-        }
-
-        .tournament-progress {
-            width: 100%;
-            height: 6px;
-            background: #374151;
-            border-radius: 3px;
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
-
-        .tournament-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
-            width: 60%;
-            border-radius: 3px;
         }
 
         .tournament-price {
@@ -710,10 +759,10 @@
             text-transform: uppercase;
         }
 
-        .tournament-register:hover {
-            background: #e5e7eb;
-            transform: translateY(-2px);
-        }
+            .tournament-register:hover {
+                background: #e5e7eb;
+                transform: translateY(-2px);
+            }
 
         /* Footer */
         .footer {
@@ -1061,12 +1110,20 @@
 
             {% if user.is_authenticated %}
             <div class="profile-box">
-                <img src="{% static 'img/default-avatar.png' %}" class="profile-avatar">
+            <a href="{% url 'profile' %}">
+                {% if user.avatar %}
+                    {# Если аватарка загружена #}
+                    <img src="{{ user.avatar.url }}" 
+                        class="profile-avatar" 
+                        alt="{{ user.username }}">
+                {% else %}
+                    {# Если аватарки нет, показываем стандартную из static #}
+                    <img src="{% static 'img/default-avatar.png' %}" 
+                        class="profile-avatar" 
+                        alt="Default">
+                {% endif %}
+            </a>
                 <div class="profile-username">{{ user.username }}</div>
-                <form method="post" action="{% url 'user_logout' %}">
-                    {% csrf_token %}
-                    <button type="submit">Выйти</button>
-                </form>
             </div>
             {% else %}
             <button id="openAuth" class="login-btn">ВОЙТИ</button>
@@ -1148,49 +1205,29 @@
             <!-- Tournaments -->
             <h2 class="section-title">Турниры</h2>
             <div class="tournaments">
-                <div class="tournament-card">
-                    <div class="tournament-image"></div>
-                    <div class="tournament-info">
-                        <div class="tournament-progress">
-                            <div class="tournament-progress-bar"></div>
-                        </div>
-                        <div class="tournament-price">1700 ₽</div>
-                        <button class="tournament-register">Регистрация</button>
+            {% for tournament in tournaments %}
+                <div class="tournament-card" 
+                    data-game="{{ tournament.game }}" 
+                    data-status="{{ tournament.status }}">
+                    
+                    <img src="{% static tournament.get_image %}" alt="{{ tournament.game }}" class="tournament-image">
+                    
+                    <div class="tournament-left-block">
+                        <h3 class="tournament-name">{{ tournament.name }}</h3>
+                        <p class="tournament-region">{{ tournament.region }}</p>
+                        <p class="tournament-price">{{ tournament.prize_pool }}</p>
                     </div>
-                </div>
 
-                <div class="tournament-card">
-                    <div class="tournament-image"></div>
-                    <div class="tournament-info">
-                        <div class="tournament-progress">
-                            <div class="tournament-progress-bar"></div>
-                        </div>
-                        <div class="tournament-price">1700 ₽</div>
+                    <div class="tournament-right-block">
                         <button class="tournament-register">Регистрация</button>
                     </div>
                 </div>
-
-                <div class="tournament-card">
-                    <div class="tournament-image"></div>
-                    <div class="tournament-info">
-                        <div class="tournament-progress">
-                            <div class="tournament-progress-bar"></div>
-                        </div>
-                        <div class="tournament-price">1700 ₽</div>
-                        <button class="tournament-register">Регистрация</button>
-                    </div>
-                </div>
-
-                <div class="tournament-card">
-                    <div class="tournament-image"></div>
-                    <div class="tournament-info">
-                        <div class="tournament-progress">
-                            <div class="tournament-progress-bar"></div>
-                        </div>
-                        <div class="tournament-price">1700 ₽</div>
-                        <button class="tournament-register">Регистрация</button>
-                    </div>
-                </div>
+            {% empty %}
+                <p>Турниров не найдено. Проверьте базу данных в админке.</p>
+            {% endfor %}
+            </div>
+            <div class="load-more-container">
+                <a href="{% url 'tournaments' %}"><button class="load-more-btn">смотреть ещё</button></a>
             </div>
 
             <!-- Footer -->

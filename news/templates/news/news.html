@@ -190,10 +190,24 @@
             transform: translateY(-2px);
         }
 
+        .profile-box {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
         .profile-avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
+        }
+
+        .profile-username {
+            font-size: 14px;
+            color: #9ca3af;
         }
 
         /* Main Content */
@@ -249,10 +263,15 @@
             transition: all 0.3s ease;
         }
 
+        .news-card {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Стиль для активной кнопки (если еще нет) */
         .filter-tab.active {
-            background: #06b6d4;
-            border-color: #06b6d4;
-            color: #fff;
+            background-color: #3b82f6; /* Например, синий */
+            color: white;
+            border-radius: 8px;
         }
 
         .filter-tab:hover:not(.active) {
@@ -262,14 +281,39 @@
 
         /* Featured News */
         .featured-news {
-            background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 40px;
-            min-height: 250px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+        /* Добавляем настройки фона */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        
+        /* Оставляем ваши стили */
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 40px;
+        min-height: 350px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        
+        /* Важно: создаем позиционирование для оверлея, если решим делать его через :before */
+        position: relative;
+        overflow: hidden; /* Чтобы картинка не вылезала за скругления */
+        }
+
+        /* Создаем темный слой поверх картинки, но под текстом */
+        .featured-news::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, rgba(31, 41, 55, 0.4) 0%, rgba(17, 24, 39, 0.8) 100%);
+            z-index: 1;
+        }
+
+        /* Поднимаем контент выше темного слоя */
+        .featured-news > div, 
+        .featured-news > p {
+            position: relative;
+            z-index: 2;
         }
 
         .featured-badge {
@@ -986,12 +1030,20 @@
 
             {% if user.is_authenticated %}
             <div class="profile-box">
-                <img src="{% static 'img/default-avatar.png' %}" class="profile-avatar">
+            <a href="{% url 'profile' %}">
+                {% if user.avatar %}
+                    {# Если аватарка загружена #}
+                    <img src="{{ user.avatar.url }}" 
+                        class="profile-avatar" 
+                        alt="{{ user.username }}">
+                {% else %}
+                    {# Если аватарки нет, показываем стандартную из static #}
+                    <img src="{% static 'img/default-avatar.png' %}" 
+                        class="profile-avatar" 
+                        alt="Default">
+                {% endif %}
+            </a>
                 <div class="profile-username">{{ user.username }}</div>
-                <form method="post" action="{% url 'user_logout' %}">
-                    {% csrf_token %}
-                    <button type="submit">Выйти</button>
-                </form>
             </div>
             {% else %}
             <button id="openAuth" class="login-btn">ВОЙТИ</button>
@@ -1009,122 +1061,54 @@
 
                 <!-- Filter Tabs -->
                 <div class="filter-tabs">
-                    <div class="filter-tab active">Все новости</div>
-                    <div class="filter-tab">Турниры</div>
-                    <div class="filter-tab">Команды</div>
-                    <div class="filter-tab">Обновления</div>
-                    <div class="filter-tab">Патчи</div>
+                    <div class="filter-tab active" data-type="all">Все новости</div>
+                    <div class="filter-tab" data-type="tournaments">Турниры</div>
+                    <div class="filter-tab" data-type="teams">Команды</div>
+                    <div class="filter-tab" data-type="updates">Обновления</div>
+                    <div class="filter-tab" data-type="patches">Патчи</div>
                 </div>
 
                 <!-- Featured News -->
-                <div class="featured-news">
+                <div class="featured-news" style="background-image: url('{{ main_news.img.url }}');">
+                {% if main_news %}
                     <div>
                         <div class="featured-badge">Главная новость</div>
-                        <h2 class="featured-title">Стартовал новый сезон ThunderCup Championship 2025</h2>
+                        <h2 class="featured-title" style="color: white;">{{ main_news.title }}</h2>
                     </div>
-                    <p class="featured-description">
-                        Приглашаем всех участников на грандиозный турнир по Dota 2 с призовым фондом 500,000 рублей. 
-                        Регистрация команд открыта до 15 марта. Не упустите свой шанс стать чемпионом!
+                    <p class="featured-description" style="color: rgba(255,255,255,0.9);">
+                        {{ main_news.text }}
                     </p>
+                {% endif %}
                 </div>
-
+                
                 <!-- News Grid -->
                 <div class="news-grid">
-                    <div class="news-card">
-                        <div class="news-image"></div>
+                    {% for news in news %}
+                    <div class="news-card" data-type="{{ news.type }}">
+                        <div class="news-image">
+                        {% if news.img %}
+                            <img src="{{ news.img.url }}" alt="{{ news.title }}">
+                        {% else %}
+                            <img src="{% static 'img/no-photo.png' %}" alt="Нет фото">
+                        {% endif %}
+                        </div>
                         <div class="news-content">
-                            <div class="news-category">Турниры</div>
-                            <h3 class="news-title">Финал CS:GO Tournament завершился победой Team Spirit</h3>
-                            <p class="news-description">
-                                В напряженной борьбе Team Spirit одержала победу над NAVI со счетом 2:1. 
-                                Лучшим игроком турнира признан donk.
-                            </p>
+                            <div class="news-category">{{ news.get_type_display }}</div>
+                            <h3 class="news-title">{{ news.title }}</h3>
+                            <p class="news-description">{{ news.text }}</p>
                             <div class="news-footer">
                                 <a href="#" class="news-read-more">Читать далее</a>
                             </div>
                         </div>
                     </div>
-
-                    <div class="news-card">
-                        <div class="news-image"></div>
-                        <div class="news-content">
-                            <div class="news-category">Обновления</div>
-                            <h3 class="news-title">Новый патч 7.35 для Dota 2: все изменения</h3>
-                            <p class="news-description">
-                                Valve выпустила масштабное обновление баланса, которое изменит мету перед 
-                                международным турниром.
-                            </p>
-                            <div class="news-footer">
-                                <a href="#" class="news-read-more">Читать далее</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="news-card">
-                        <div class="news-image"></div>
-                        <div class="news-content">
-                            <div class="news-category">Команды</div>
-                            <h3 class="news-title">OG объявила новый состав на сезон 2025</h3>
-                            <p class="news-description">
-                                Легендарная организация OG представила обновленный состав с тремя новыми 
-                                игроками из СНГ региона.
-                            </p>
-                            <div class="news-footer">
-                                <a href="#" class="news-read-more">Читать далее</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="news-card">
-                        <div class="news-image"></div>
-                        <div class="news-content">
-                            <div class="news-category">Турниры</div>
-                            <h3 class="news-title">Открыта регистрация на PUBG Mobile Championship</h3>
-                            <p class="news-description">
-                                Призовой фонд турнира составляет 200,000 рублей. Регистрация команд 
-                                продлится до конца месяца.
-                            </p>
-                            <div class="news-footer">
-                                <a href="#" class="news-read-more">Читать далее</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="news-card">
-                        <div class="news-image"></div>
-                        <div class="news-content">
-                            <div class="news-category">Патчи</div>
-                            <h3 class="news-title">Valorant Episode 8 Act 2: новый агент и карта</h3>
-                            <p class="news-description">
-                                Riot Games анонсировала нового агента с уникальными способностями и 
-                                совершенно новую карту для соревновательного режима.
-                            </p>
-                            <div class="news-footer">
-                                <a href="#" class="news-read-more">Читать далее</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="news-card">
-                        <div class="news-image"></div>
-                        <div class="news-content">
-                            <div class="news-category">Команды</div>
-                            <h3 class="news-title">Состав NAVI пополнился новым снайпером</h3>
-                            <p class="news-description">
-                                Клуб Natus Vincere подписал контракт с молодым талантом из российской 
-                                сцены на позицию AWPer.
-                            </p>
-                            <div class="news-footer">
-                                <a href="#" class="news-read-more">Читать далее</a>
-                            </div>
-                        </div>
-                    </div>
+                    {% empty %}
+                    <p>Новостей пока нет. Следите за обновлениями!</p>
+                    {% endfor %}
                 </div>
-
                 <!-- Load More Button -->
-                <div class="load-more-container">
+                <!-- <div class="load-more-container">
                     <button class="load-more-btn">Загрузить ещё</button>
-                </div>
+                </div> -->
 
                 <!-- Footer -->
                 <div class="footer">
@@ -1150,6 +1134,35 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.filter-tab');
+            const cards = document.querySelectorAll('.news-card');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 1. Меняем активную вкладку
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    const filterType = tab.getAttribute('data-type');
+
+                    // 2. Фильтруем карточки
+                    cards.forEach(card => {
+                        const cardType = card.getAttribute('data-type');
+
+                        if (filterType === 'all' || cardType === filterType) {
+                            card.style.display = 'flex'; // Показываем
+                            // Добавим небольшую анимацию появления
+                            card.style.opacity = '0';
+                            setTimeout(() => card.style.opacity = '1', 10);
+                        } else {
+                            card.style.display = 'none'; // Скрываем
+                        }
+                    });
+                });
+            });
+        });
+
         // Authorization Modal
         const authModal = document.getElementById('authModal');
         const authModalClose = document.getElementById('authModalClose');
