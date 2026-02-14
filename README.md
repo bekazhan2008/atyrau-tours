@@ -9,7 +9,7 @@ source venv\Scripts\activate.bat //MacOS
 then install requirements:
 pip install -r requirements.txt
 
-after all make migrations and create super user
+after all make migrations and create super user:
 python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser
