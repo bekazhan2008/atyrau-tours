@@ -1,56 +1,19 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .forms import LoginForm
+from django.views.decorators.http import require_http_methods
+from .forms import LoginForm, RegisterForm
 from .models import User
-from tournaments.models import Tournament
+from tournaments.models import Tournament, PastTournament
+import json
+from django.http import JsonResponse
 from django.contrib import messages
-from django.core.mail import send_mail
-from django.conf import settings
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
-from django.contrib.sites.shortcuts import get_current_site
-from django.contrib.auth.tokens import default_token_generator
-from django.urls import reverse
-
-
-def api_login(request):
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            if not user.is_active:
-                return JsonResponse({
-                    "success": False,
-                    "error": "Подтвердите почту перед входом"
-                })
-
-            login(request, user)
-            return JsonResponse({
-                "success": True
-            })
-
-        return JsonResponse({
-            "success": False,
-            "error": "Неверный логин или пароль"
-        })
-
-    return JsonResponse({
-        "success": False,
-        "error": "Метод не разрешен"
-    })
 
 
 def home(request):
     tournaments = Tournament.objects.all()
     login_form = LoginForm()
-    return render(request, 'users/home.html', {
-        'login_form': login_form,
-        'tournaments': tournaments
-    })
+    return render(request, 'users/home.html', {'login_form': login_form, 'tournaments': tournaments})
 
 
 def register_view(request):
@@ -61,97 +24,25 @@ def register_view(request):
         password2 = request.POST.get("password2")
 
         if password != password2:
-            messages.error(request, "Пароли не совпадают")
             return redirect("home")
 
         if User.objects.filter(username=username).exists():
-            messages.error(request, "Такой логин уже существует")
             return redirect("home")
 
         if User.objects.filter(email=email).exists():
-            messages.error(request, "Такая почта уже используется")
             return redirect("home")
 
         user = User.objects.create_user(
             username=username,
             email=email,
-            password=password,
-            is_active=False
+            password=password
         )
 
-        # Генерация ссылки подтверждения
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        token = default_token_generator.make_token(user)
-
-        activation_link = request.build_absolute_uri(
-            reverse('activate', kwargs={'uidb64': uid, 'token': token})
-        )
-
-        send_mail(
-            subject="Подтверждение регистрации",
-            message=f"""
-Привет {username}!
-
-Спасибо за регистрацию ⚡
-
-Подтверди свою почту по ссылке:
-{activation_link}
-
-Если это были не ты — просто проигнорируй письмо.
-""",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[email],
-            fail_silently=False,
-        )
-
-        messages.success(request, "Письмо с подтверждением отправлено на вашу почту!")
+        login(request, user)
         return redirect("home")
 
     return redirect("home")
 
-
-# =======================
-# АКТИВАЦИЯ
-# =======================
-
-def activate(request, uidb64, token):
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
-
-    if user and default_token_generator.check_token(user, token):
-        user.is_active = True
-        user.save()
-
-        # Письмо "Добро пожаловать"
-        send_mail(
-            subject="Добро пожаловать 🎉",
-            message=f"""
-Привет {user.username}!
-
-Твоя почта успешно подтверждена ✅
-Добро пожаловать на Thunder Cup ⚡
-
-Теперь ты можешь участвовать в турнирах!
-""",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=True,
-        )
-
-        login(request, user)
-        messages.success(request, "Почта подтверждена! Вы вошли в систему.")
-        return redirect("home")
-    else:
-        messages.error(request, "Ссылка недействительна или устарела.")
-        return redirect("home")
-
-
-# =======================
-# ЛОГИН
-# =======================
 
 def user_login(request):
     if request.method == 'POST':
@@ -164,10 +55,6 @@ def user_login(request):
             user = authenticate(request, username=username, password=password)
 
             if user is not None:
-                if not user.is_active:
-                    messages.error(request, "Подтвердите почту перед входом!")
-                    return redirect("home")
-
                 login(request, user)
                 return redirect('home')
             else:
@@ -182,8 +69,30 @@ def user_logout(request):
     logout(request)
     return redirect('home')
 
+
+def api_login(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect("home")
+
+        return redirect("home")
+
+
+def logout_view(request):
+    """Logout user"""
+    logout(request)
+    return redirect('home')
+
+
 @login_required
 def profile(request):
+    """User profile page"""
+    return render(request, 'users/profile.html', {'user': request.user})
     return render(request, 'users/profile.html', {'user': request.user})
 
 
@@ -191,11 +100,12 @@ def profile(request):
 def update_profile(request):
     if request.method == 'POST':
         user = request.user
+        # Обновляем ник
         user.username = request.POST.get('username')
 
+        # Обработка аватарки
         if 'avatar' in request.FILES:
             user.avatar = request.FILES['avatar']
 
         user.save()
-
     return redirect('profile')
